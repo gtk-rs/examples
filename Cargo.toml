@@ -1,5 +1,5 @@
 [package]
-name = "rgtk-examples"
+name = "gtk-examples"
 version = "0.0.1"
 authors = ["The Rust-gnome Project Developers"]
 
