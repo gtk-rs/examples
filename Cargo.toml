@@ -5,6 +5,8 @@ authors = ["The Gtk-rs Project Developers"]
 
 [dependencies]
 libc = "0.1"
+gl = { version = "^0", optional = true }
+glutin = { version = "^0", optional = true }
 
 [dependencies.glib]
 git = "https://github.com/gtk-rs/glib"
@@ -18,14 +20,11 @@ git = "https://github.com/gtk-rs/gdk"
 [dependencies.gtk]
 git = "https://github.com/gtk-rs/gtk"
 
-glib = "^0"
-gdk = "^0"
-gtk = "^0"
-cairo-rs = "^0"
-
 [features]
 gtk_3_10 = []
 gtk_3_14 = ["gtk_3_10"]
+gtk_3_16 = ["gtk_3_14"]
+opengl = ["gtk_3_16", "gl", "glutin"]
 
 [[bin]]
 name = "basic"
@@ -56,3 +55,6 @@ name = "treeview"
 
 [[bin]]
 name = "multithreading_context"
+
+[[bin]]
+name = "glarea"
