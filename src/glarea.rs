@@ -23,7 +23,13 @@ mod example {
         let window = Window::new(gtk::WindowType::Toplevel).unwrap();
         let glarea = GLArea::new().unwrap();
 
-        // Hack to set up gl
+        // OpenGL/the gl crate needs a loader function to resolve OpenGL functions at runtime,
+        // glutin provides this functionality in a relatively platform-independent way but requires
+        // construction of a window/context first. To accomodate this, we create an invisible
+        // window and use its get_proc_address function from gl to resolve missing functions.
+        // This should work on any platform glutin works on, however the construction of the
+        // separate window is unnecessary and it should be possible to isolate the platform
+        // detection and get_proc_address functionality either in glutin or elsewhere.
         let dummy_win = glutin::WindowBuilder::new().with_visibility(false).build().unwrap();
         gl::load_with(|s| dummy_win.get_proc_address(s));
 

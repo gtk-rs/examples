@@ -5,7 +5,7 @@ set -e
 
 if [ "$GTK" = latest ]; then
 	BUNDLE="gtk-3.18.1-2"
-	FEATURES=gtk_3_10
+	FEATURES="gtk_3_16 opengl"
 fi
 
 if [ -n "$BUNDLE" ]; then
