@@ -3,16 +3,21 @@
 //! This sample demonstrates how to use GLAreas and OpenGL
 
 extern crate gtk;
+extern crate libc;
 
 #[cfg(feature = "opengl")]
 mod example {
     extern crate gl;
     extern crate glutin;
+    extern crate shared_library;
 
     use gtk;
     use gtk::traits::*;
     use gtk::signal::Inhibit;
     use gtk::{GLArea, Window};
+    use libc;
+    use self::shared_library::dynamic_library::DynamicLibrary;
+    use std::ptr;
 
     pub fn main() {
         if gtk::init().is_err() {
@@ -23,15 +28,17 @@ mod example {
         let window = Window::new(gtk::WindowType::Toplevel).unwrap();
         let glarea = GLArea::new().unwrap();
 
-        // OpenGL/the gl crate needs a loader function to resolve OpenGL functions at runtime,
-        // glutin provides this functionality in a relatively platform-independent way but requires
-        // construction of a window/context first. To accomodate this, we create an invisible
-        // window and use its get_proc_address function from gl to resolve missing functions.
-        // This should work on any platform glutin works on, however the construction of the
-        // separate window is unnecessary and it should be possible to isolate the platform
-        // detection and get_proc_address functionality either in glutin or elsewhere.
-        let dummy_win = glutin::WindowBuilder::new().with_visibility(false).build().unwrap();
-        gl::load_with(|s| dummy_win.get_proc_address(s));
+        // Loads OpenGL addresses from libepoxy, looks up the corresponding epoxy symbol and
+        // extracts the correct function address from epoxy's dispatch table.
+        gl::load_with(|s| {
+            let symbol = format!("epoxy_{}", s);
+            unsafe {
+                match DynamicLibrary::open(None).unwrap().symbol(&*symbol) {
+                    Ok(v) => *(v as *const *const libc::c_void),
+                    Err(_) => ptr::null(),
+                }
+            }
+        });
 
         window.connect_delete_event(|_, _| {
             gtk::main_quit();
