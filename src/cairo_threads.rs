@@ -55,10 +55,10 @@ macro_rules! clone {
 // and forth repeatedly.
 
 fn main() {
-    if gtk::init().is_err() {
-        println!("Failed to initialize GTK.");
-        return;
-    }
+    gtk::init()
+        .ok()
+        .expect("Failed to initialize GTK.");
+
     let window = Window::new(WindowType::Toplevel).unwrap();
     let area = DrawingArea::new().unwrap();
     window.add(&area);

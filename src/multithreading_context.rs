@@ -8,10 +8,9 @@ use std::sync::mpsc::{channel, Receiver};
 use std::thread;
 
 fn main() {
-    if gtk::init().is_err() {
-        println!("Failed to initialize GTK.");
-        return;
-    }
+    gtk::init()
+        .ok()
+        .expect("Failed to initialize GTK.");
 
     let window = gtk::Window::new(gtk::WindowType::Toplevel).unwrap();
 
@@ -35,7 +34,7 @@ fn main() {
     GLOBAL.with(move |global| {
         *global.borrow_mut() = Some((text_view.get_buffer().unwrap(), rx))
     });
-    
+
     thread::spawn(move|| {
         for i in 1..100 {
             // do long work
