@@ -2,12 +2,15 @@
 name = "rgtk-examples"
 version = "0.0.1"
 authors = ["The Gtk-rs Project Developers"]
+build = "build.rs"
+
+[build-dependencies]
+gl_generator = { version = "^0.1", optional = true }
+khronos_api = { version = "^0", optional = true }
 
 [dependencies]
 libc = "0.1"
-gl = { version = "^0.1", optional = true }
-glutin = { version = "^0.4", optional = true }
-shared_library = { version = "^0.1", optional = true }
+gl_common = { version = "^0.1", optional = true }
 
 [dependencies.glib]
 git = "https://github.com/gtk-rs/glib"
@@ -25,7 +28,7 @@ git = "https://github.com/gtk-rs/gtk"
 gtk_3_10 = []
 gtk_3_14 = ["gtk_3_10"]
 gtk_3_16 = ["gtk_3_14"]
-opengl = ["gtk_3_16", "gl", "glutin", "shared_library"]
+opengl = ["gtk_3_16", "gl_generator", "khronos_api", "gl_common"]
 
 [[bin]]
 name = "basic"

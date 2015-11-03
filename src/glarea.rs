@@ -7,17 +7,16 @@ extern crate libc;
 
 #[cfg(feature = "opengl")]
 mod example {
-    extern crate gl;
-    extern crate glutin;
-    extern crate shared_library;
+    #[link(name = "epoxy")] extern {}
+
+    mod epoxy {
+        include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+    }
 
     use gtk;
     use gtk::traits::*;
     use gtk::signal::Inhibit;
     use gtk::{GLArea, Window};
-    use libc;
-    use self::shared_library::dynamic_library::DynamicLibrary;
-    use std::ptr;
 
     pub fn main() {
         if gtk::init().is_err() {
@@ -28,18 +27,6 @@ mod example {
         let window = Window::new(gtk::WindowType::Toplevel).unwrap();
         let glarea = GLArea::new().unwrap();
 
-        // Loads OpenGL addresses from libepoxy, looks up the corresponding epoxy symbol and
-        // extracts the correct function address from epoxy's dispatch table.
-        gl::load_with(|s| {
-            let symbol = format!("epoxy_{}", s);
-            unsafe {
-                match DynamicLibrary::open(None).unwrap().symbol(&*symbol) {
-                    Ok(v) => *(v as *const *const libc::c_void),
-                    Err(_) => ptr::null(),
-                }
-            }
-        });
-
         window.connect_delete_event(|_, _| {
             gtk::main_quit();
             Inhibit(false)
@@ -47,12 +34,12 @@ mod example {
 
         glarea.connect_render(|_, _| {
             unsafe {
-                gl::ClearColor(1.0, 0.0, 0.0, 1.0);
-                gl::Clear(gl::COLOR_BUFFER_BIT);
-    
-                gl::Flush();
+                epoxy::Gl.ClearColor(1.0, 0.0, 0.0, 1.0);
+                epoxy::Gl.Clear(epoxy::COLOR_BUFFER_BIT);
+
+                epoxy::Gl.Flush();
             };
-    
+
             Inhibit(false)
         });
 
@@ -74,4 +61,3 @@ fn main() {
 fn main() {
     println!("Did you forget to build with `--features opengl`?");
 }
-
