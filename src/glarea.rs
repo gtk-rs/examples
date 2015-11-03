@@ -7,11 +7,7 @@ extern crate libc;
 
 #[cfg(feature = "opengl")]
 mod example {
-    #[link(name = "epoxy")] extern {}
-
-    mod epoxy {
-        include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
-    }
+    extern crate epoxy;
 
     use gtk;
     use gtk::traits::*;
