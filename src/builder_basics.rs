@@ -14,10 +14,10 @@ mod example {
 
 
     pub fn main() {
-        if gtk::init().is_err() {
-            println!("Failed to initialize GTK.");
-            return;
-        }
+        gtk::init()
+            .ok()
+            .expect("Failed to initialize GTK.");
+
         let glade_src = include_str!("builder_basics.glade");
         let builder = Builder::new_from_string(glade_src).unwrap();
         let window: Window = builder.get_object("window1").unwrap();
@@ -49,4 +49,3 @@ fn main() {
     println!("This example only work with GTK 3.10 and later");
     println!("Did you forget to build with `--features gtk_3_10`?");
 }
-

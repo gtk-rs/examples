@@ -50,10 +50,10 @@ fn about_clicked(_: gtk::Button) {
 }
 
 fn main() {
-    if gtk::init().is_err() {
-        println!("Failed to initialize GTK.");
-        return;
-    }
+    gtk::init()
+        .ok()
+        .expect("Failed to initialize GTK.");
+
     println!("Major: {}, Minor: {}", gtk::get_major_version(), gtk::get_minor_version());
     let window = gtk::Window::new(gtk::WindowType::Toplevel).unwrap();
     let frame = gtk::Frame::new(Some("Yep a frame")).unwrap();
