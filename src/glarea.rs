@@ -5,6 +5,22 @@
 extern crate gtk;
 extern crate libc;
 
+// make moving clones into closures more convenient
+macro_rules! clone {
+    ($($n:ident),+; || $body:block) => (
+        {
+            $( let $n = $n.clone(); )+
+            move || { $body }
+        }
+    );
+    ($($n:ident),+; |$($p:ident),+| $body:block) => (
+        {
+            $( let $n = $n.clone(); )+
+            move |$($p),+| { $body }
+        }
+    );
+}
+
 #[cfg(feature = "opengl")]
 extern crate epoxy;
 
@@ -14,6 +30,8 @@ mod example {
     use std::ffi;
     use std::mem;
     use std::ptr;
+    use std::cell::RefCell;
+    use std::rc::Rc;
 
     use gtk;
     use gtk::traits::*;
@@ -78,16 +96,19 @@ mod example {
         }
 
         let window = Window::new(gtk::WindowType::Toplevel).unwrap();
-        let glarea = GLArea::new().unwrap();
+
+        let cell = Rc::new(RefCell::new(GLArea::new().unwrap()));
+        let glarea = cell.clone();
 
         window.connect_delete_event(|_, _| {
             gtk::main_quit();
             Inhibit(false)
         });
 
-        glarea.connect_render(|_, _| {
-            // TODO: Most of this should be done on realize, need to figure out issues with the
-            // context then though
+        glarea.borrow().connect_realize(clone!(cell; |_widget| {
+            let glarea = cell.borrow();
+            glarea.make_current();
+
             let vertices: [GLfloat; 6] = [0.0, 0.5, 0.5, -0.5, -0.5, -0.5];
 
             let vert_shader_src = r#"
@@ -133,7 +154,11 @@ mod example {
                 Gl.EnableVertexAttribArray(pos_attr as GLuint);
                 Gl.VertexAttribPointer(pos_attr as GLuint, 2, epoxy::FLOAT,
                                        epoxy::FALSE as GLboolean, 0, ptr::null());
+            }
+        }));
 
+        glarea.borrow().connect_render(|_, _| {
+            unsafe {
                 Gl.ClearColor(0.3, 0.3, 0.3, 1.0);
                 Gl.Clear(epoxy::COLOR_BUFFER_BIT);
 
@@ -145,7 +170,7 @@ mod example {
 
         window.set_title("GLArea Example");
         window.set_default_size(400, 400);
-        window.add(&glarea);
+        window.add(&*glarea.borrow());
 
         window.show_all();
         gtk::main();
