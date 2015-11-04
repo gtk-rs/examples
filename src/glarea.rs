@@ -109,24 +109,34 @@ mod example {
             let glarea = cell.borrow();
             glarea.make_current();
 
-            let vertices: [GLfloat; 6] = [0.0, 0.5, 0.5, -0.5, -0.5, -0.5];
+            let vertices: [GLfloat; 15] = [
+                0.0, 0.5, 1.0, 0.0, 0.0,
+                0.5, -0.5, 0.0, 1.0, 0.0,
+                -0.5, -0.5, 0.0, 0.0, 1.0,
+            ];
 
             let vert_shader_src = r#"
                 #version 140
 
                 in vec2 position;
+                in vec3 color;
+
+                out vec3 vertex_color;
 
                 void main() {
+                    vertex_color = color;
                     gl_Position = vec4(position, 0.0, 1.0);
                 }"#;
 
             let frag_shader_src = r#"
                 #version 140
 
+                in vec3 vertex_color;
+
                 out vec4 color;
 
                 void main() {
-                    color = vec4(1.0, 0.0, 0.0, 1.0);
+                    color = vec4(vertex_color, 1.0);
                 }"#;
 
             let vs = compile_shader(vert_shader_src, epoxy::VERTEX_SHADER);
@@ -152,8 +162,15 @@ mod example {
 
                 let pos_attr = Gl.GetAttribLocation(program, ffi::CString::new("position").unwrap().as_ptr());
                 Gl.EnableVertexAttribArray(pos_attr as GLuint);
-                Gl.VertexAttribPointer(pos_attr as GLuint, 2, epoxy::FLOAT,
-                                       epoxy::FALSE as GLboolean, 0, ptr::null());
+                Gl.VertexAttribPointer(pos_attr as GLuint, 2, epoxy::FLOAT, epoxy::FALSE as GLboolean,
+                                       (5 * mem::size_of::<GLfloat>()) as GLint,
+                                       ptr::null());
+
+                let color_attr = Gl.GetAttribLocation(program, ffi::CString::new("color").unwrap().as_ptr());
+                Gl.EnableVertexAttribArray(color_attr as GLuint);
+                Gl.VertexAttribPointer(color_attr as GLuint, 3, epoxy::FLOAT, epoxy::FALSE as GLboolean,
+                                       (5 * mem::size_of::<GLfloat>()) as GLint,
+                                       (2 * mem::size_of::<GLfloat>()) as *const GLvoid);
             }
         }));
 
