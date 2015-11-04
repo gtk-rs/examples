@@ -29,7 +29,7 @@ extern crate epoxy;
 mod example {
     use std::mem;
     use std::ptr;
-    use std::str;
+    use std::ffi::CStr;
 
     use gtk;
     use gtk::traits::*;
@@ -57,11 +57,9 @@ mod example {
             if status != (epoxy::TRUE as GLint) {
                 let mut len = 0;
                 Gl.GetShaderiv(shader, epoxy::INFO_LOG_LENGTH, &mut len);
-                let mut buf = Vec::with_capacity(len as usize);
-                buf.set_len((len as usize) - 1); // Skip trailing null
+                let mut buf = vec![0i8; len as usize];
                 Gl.GetShaderInfoLog(shader, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
-                panic!("Error compiling shader: {}",
-                       str::from_utf8(&buf).ok().expect("ShaderInfoLog not valid utf8"));
+                panic!("Error compiling shader: {}", CStr::from_ptr(buf.as_ptr()).to_string_lossy());
             }
 
             shader
@@ -83,11 +81,9 @@ mod example {
             if status != (epoxy::TRUE as GLint) {
                 let mut len: GLint = 0;
                 Gl.GetProgramiv(program, epoxy::INFO_LOG_LENGTH, &mut len);
-                let mut buf = Vec::with_capacity(len as usize);
-                buf.set_len((len as usize) - 1); // Skip trailing null
+                let mut buf = vec![0i8; len as usize];
                 Gl.GetProgramInfoLog(program, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
-                panic!("Error linking shader: {}",
-                       str::from_utf8(&buf).ok().expect("ProgramInfoLog not valid utf8"));
+                panic!("Error linking shader: {}", CStr::from_ptr(buf.as_ptr()).to_string_lossy());
             }
 
             program
