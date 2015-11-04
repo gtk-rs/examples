@@ -30,8 +30,6 @@ mod example {
     use std::ffi;
     use std::mem;
     use std::ptr;
-    use std::cell::RefCell;
-    use std::rc::Rc;
 
     use gtk;
     use gtk::traits::*;
@@ -43,9 +41,8 @@ mod example {
     use epoxy::Gl;
 
     fn compile_shader(src: &str, ty: GLenum) -> GLuint {
-        let shader;
         unsafe {
-            shader = Gl.CreateShader(ty);
+            let shader = Gl.CreateShader(ty);
             // Attempt to compile the shader
             let csrc = ffi::CString::new(src).unwrap().as_ptr();
             Gl.ShaderSource(shader, 1, &csrc, ptr::null());
@@ -63,31 +60,34 @@ mod example {
                 Gl.GetShaderInfoLog(shader, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
                 panic!("Error compiling shader");
             }
+
+            shader
         }
-        shader
     }
 
-    fn link_program(vs: GLuint, fs: GLuint) -> GLuint { unsafe {
-        let program = Gl.CreateProgram();
-        Gl.AttachShader(program, vs);
-        Gl.AttachShader(program, fs);
-        Gl.LinkProgram(program);
+    fn link_program(vs: GLuint, fs: GLuint) -> GLuint {
+        unsafe {
+            let program = Gl.CreateProgram();
+            Gl.AttachShader(program, vs);
+            Gl.AttachShader(program, fs);
+            Gl.LinkProgram(program);
 
-        // Get the link status
-        let mut status = epoxy::FALSE as GLint;
-        Gl.GetProgramiv(program, epoxy::LINK_STATUS, &mut status);
+            // Get the link status
+            let mut status = epoxy::FALSE as GLint;
+            Gl.GetProgramiv(program, epoxy::LINK_STATUS, &mut status);
 
-        // Fail on error
-        if status != (epoxy::TRUE as GLint) {
-            let mut len: GLint = 0;
-            Gl.GetProgramiv(program, epoxy::INFO_LOG_LENGTH, &mut len);
-            let mut buf = vec![0u8; len as usize - 1];
-            Gl.GetProgramInfoLog(program, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
-            panic!("Error linking shader");
+            // Fail on error
+            if status != (epoxy::TRUE as GLint) {
+                let mut len: GLint = 0;
+                Gl.GetProgramiv(program, epoxy::INFO_LOG_LENGTH, &mut len);
+                let mut buf = vec![0u8; len as usize - 1];
+                Gl.GetProgramInfoLog(program, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
+                panic!("Error linking shader");
+            }
+
+            program
         }
-
-        program
-    }}
+    }
 
     pub fn main() {
         if gtk::init().is_err() {
@@ -97,16 +97,14 @@ mod example {
 
         let window = Window::new(gtk::WindowType::Toplevel).unwrap();
 
-        let cell = Rc::new(RefCell::new(GLArea::new().unwrap()));
-        let glarea = cell.clone();
+        let glarea = GLArea::new().unwrap();
 
         window.connect_delete_event(|_, _| {
             gtk::main_quit();
             Inhibit(false)
         });
 
-        glarea.borrow().connect_realize(clone!(cell; |_widget| {
-            let glarea = cell.borrow();
+        glarea.connect_realize(clone!(glarea; |_widget| {
             glarea.make_current();
 
             let vertices: [GLfloat; 15] = [
@@ -174,7 +172,7 @@ mod example {
             }
         }));
 
-        glarea.borrow().connect_render(|_, _| {
+        glarea.connect_render(|_, _| {
             unsafe {
                 Gl.ClearColor(0.3, 0.3, 0.3, 1.0);
                 Gl.Clear(epoxy::COLOR_BUFFER_BIT);
@@ -187,7 +185,7 @@ mod example {
 
         window.set_title("GLArea Example");
         window.set_default_size(400, 400);
-        window.add(&*glarea.borrow());
+        window.add(&glarea);
 
         window.show_all();
         gtk::main();
