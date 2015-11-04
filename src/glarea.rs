@@ -27,7 +27,6 @@ extern crate epoxy;
 // Based off of the static-triangle example from gl-rs
 #[cfg(feature = "opengl")]
 mod example {
-    use std::ffi;
     use std::mem;
     use std::ptr;
 
@@ -44,8 +43,9 @@ mod example {
         unsafe {
             let shader = Gl.CreateShader(ty);
             // Attempt to compile the shader
-            let csrc = ffi::CString::new(src).unwrap().as_ptr();
-            Gl.ShaderSource(shader, 1, &csrc, ptr::null());
+            let psrc = src.as_ptr() as *const GLchar;
+            let len = src.len() as GLint;
+            Gl.ShaderSource(shader, 1, &psrc, &len);
             Gl.CompileShader(shader);
 
             // Get the compile status
@@ -156,15 +156,15 @@ mod example {
                               epoxy::STATIC_DRAW);
 
                 Gl.UseProgram(program);
-                Gl.BindFragDataLocation(program, 0, ffi::CString::new("color").unwrap().as_ptr());
+                Gl.BindFragDataLocation(program, 0, b"color\0".as_ptr() as *const GLchar);
 
-                let pos_attr = Gl.GetAttribLocation(program, ffi::CString::new("position").unwrap().as_ptr());
+                let pos_attr = Gl.GetAttribLocation(program, b"position\0".as_ptr() as *const GLchar);
                 Gl.EnableVertexAttribArray(pos_attr as GLuint);
                 Gl.VertexAttribPointer(pos_attr as GLuint, 2, epoxy::FLOAT, epoxy::FALSE as GLboolean,
                                        (5 * mem::size_of::<GLfloat>()) as GLint,
                                        ptr::null());
 
-                let color_attr = Gl.GetAttribLocation(program, ffi::CString::new("color").unwrap().as_ptr());
+                let color_attr = Gl.GetAttribLocation(program, b"color\0".as_ptr() as *const GLchar);
                 Gl.EnableVertexAttribArray(color_attr as GLuint);
                 Gl.VertexAttribPointer(color_attr as GLuint, 3, epoxy::FLOAT, epoxy::FALSE as GLboolean,
                                        (5 * mem::size_of::<GLfloat>()) as GLint,
