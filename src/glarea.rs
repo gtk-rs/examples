@@ -21,12 +21,13 @@ macro_rules! clone {
     );
 }
 
-#[cfg(feature = "opengl")]
-extern crate epoxy;
-
 // Based off of the static-triangle example from gl-rs
 #[cfg(feature = "opengl")]
 mod example {
+    extern crate epoxy;
+    extern crate gl;
+    extern crate shared_library;
+
     use std::mem;
     use std::ptr;
     use std::ffi::CStr;
@@ -37,29 +38,29 @@ mod example {
     use gtk::signal::Inhibit;
     use gtk::{GLArea, MessageDialog, Window};
 
-    use epoxy;
-    use epoxy::types::*;
-    use epoxy::Gl;
+    use self::gl::types::*;
+
+    use self::shared_library::dynamic_library::DynamicLibrary;
 
     fn compile_shader(src: &str, ty: GLenum) -> Result<GLuint, String> {
         unsafe {
-            let shader = Gl.CreateShader(ty);
+            let shader = gl::CreateShader(ty);
             // Attempt to compile the shader
             let psrc = src.as_ptr() as *const GLchar;
             let len = src.len() as GLint;
-            Gl.ShaderSource(shader, 1, &psrc, &len);
-            Gl.CompileShader(shader);
+            gl::ShaderSource(shader, 1, &psrc, &len);
+            gl::CompileShader(shader);
 
             // Get the compile status
             let mut status = epoxy::FALSE as GLint;
-            Gl.GetShaderiv(shader, epoxy::COMPILE_STATUS, &mut status);
+            gl::GetShaderiv(shader, epoxy::COMPILE_STATUS, &mut status);
 
             // Fail on error
             if status != (epoxy::TRUE as GLint) {
                 let mut len = 0;
-                Gl.GetShaderiv(shader, epoxy::INFO_LOG_LENGTH, &mut len);
+                gl::GetShaderiv(shader, epoxy::INFO_LOG_LENGTH, &mut len);
                 let mut buf = vec![0i8; len as usize];
-                Gl.GetShaderInfoLog(shader, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
+                gl::GetShaderInfoLog(shader, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
                 return Err(CStr::from_ptr(buf.as_ptr()).to_string_lossy().into_owned())
             }
 
@@ -69,21 +70,21 @@ mod example {
 
     fn link_program(vs: GLuint, fs: GLuint) -> Result<GLuint, String> {
         unsafe {
-            let program = Gl.CreateProgram();
-            Gl.AttachShader(program, vs);
-            Gl.AttachShader(program, fs);
-            Gl.LinkProgram(program);
+            let program = gl::CreateProgram();
+            gl::AttachShader(program, vs);
+            gl::AttachShader(program, fs);
+            gl::LinkProgram(program);
 
             // Get the link status
             let mut status = epoxy::FALSE as GLint;
-            Gl.GetProgramiv(program, epoxy::LINK_STATUS, &mut status);
+            gl::GetProgramiv(program, epoxy::LINK_STATUS, &mut status);
 
             // Fail on error
             if status != (epoxy::TRUE as GLint) {
                 let mut len: GLint = 0;
-                Gl.GetProgramiv(program, epoxy::INFO_LOG_LENGTH, &mut len);
+                gl::GetProgramiv(program, epoxy::INFO_LOG_LENGTH, &mut len);
                 let mut buf = vec![0i8; len as usize];
-                Gl.GetProgramInfoLog(program, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
+                gl::GetProgramInfoLog(program, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
                 return Err(CStr::from_ptr(buf.as_ptr()).to_string_lossy().into_owned())
             }
 
@@ -109,6 +110,16 @@ mod example {
         let glarea = GLArea::new().unwrap();
         let error_dialog = MessageDialog::new(Some(&window), gtk::DIALOG_MODAL,
             gtk::MessageType::Error, gtk::ButtonsType::Ok).unwrap();
+
+        epoxy::load_with(|s| {
+            unsafe {
+                match DynamicLibrary::open(None).unwrap().symbol(s) {
+                    Ok(v) => v,
+                    Err(_) => ptr::null(),
+                }
+            }
+        });
+        gl::load_with(epoxy::get_proc_addr);
 
         window.connect_delete_event(|_, _| {
             gtk::main_quit();
@@ -174,28 +185,28 @@ mod example {
             let mut vbo: GLuint = 0;
 
             unsafe {
-                Gl.GenVertexArrays(1, &mut vao);
-                Gl.BindVertexArray(vao);
+                gl::GenVertexArrays(1, &mut vao);
+                gl::BindVertexArray(vao);
 
-                Gl.GenBuffers(1, &mut vbo);
-                Gl.BindBuffer(epoxy::ARRAY_BUFFER, vbo);
-                Gl.BufferData(epoxy::ARRAY_BUFFER,
+                gl::GenBuffers(1, &mut vbo);
+                gl::BindBuffer(epoxy::ARRAY_BUFFER, vbo);
+                gl::BufferData(epoxy::ARRAY_BUFFER,
                               (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
                               mem::transmute(&vertices[0]),
                               epoxy::STATIC_DRAW);
 
-                Gl.UseProgram(program);
-                Gl.BindFragDataLocation(program, 0, b"color\0".as_ptr() as *const GLchar);
+                gl::UseProgram(program);
+                gl::BindFragDataLocation(program, 0, b"color\0".as_ptr() as *const GLchar);
 
-                let pos_attr = Gl.GetAttribLocation(program, b"position\0".as_ptr() as *const GLchar);
-                Gl.EnableVertexAttribArray(pos_attr as GLuint);
-                Gl.VertexAttribPointer(pos_attr as GLuint, 2, epoxy::FLOAT, epoxy::FALSE as GLboolean,
+                let pos_attr = gl::GetAttribLocation(program, b"position\0".as_ptr() as *const GLchar);
+                gl::EnableVertexAttribArray(pos_attr as GLuint);
+                gl::VertexAttribPointer(pos_attr as GLuint, 2, epoxy::FLOAT, epoxy::FALSE as GLboolean,
                                        (5 * mem::size_of::<GLfloat>()) as GLint,
                                        ptr::null());
 
-                let color_attr = Gl.GetAttribLocation(program, b"color\0".as_ptr() as *const GLchar);
-                Gl.EnableVertexAttribArray(color_attr as GLuint);
-                Gl.VertexAttribPointer(color_attr as GLuint, 3, epoxy::FLOAT, epoxy::FALSE as GLboolean,
+                let color_attr = gl::GetAttribLocation(program, b"color\0".as_ptr() as *const GLchar);
+                gl::EnableVertexAttribArray(color_attr as GLuint);
+                gl::VertexAttribPointer(color_attr as GLuint, 3, epoxy::FLOAT, epoxy::FALSE as GLboolean,
                                        (5 * mem::size_of::<GLfloat>()) as GLint,
                                        (2 * mem::size_of::<GLfloat>()) as *const GLvoid);
             }
@@ -203,10 +214,10 @@ mod example {
 
         glarea.connect_render(|_, _| {
             unsafe {
-                Gl.ClearColor(0.3, 0.3, 0.3, 1.0);
-                Gl.Clear(epoxy::COLOR_BUFFER_BIT);
+                gl::ClearColor(0.3, 0.3, 0.3, 1.0);
+                gl::Clear(epoxy::COLOR_BUFFER_BIT);
 
-                Gl.DrawArrays(epoxy::TRIANGLES, 0, 3);
+                gl::DrawArrays(epoxy::TRIANGLES, 0, 3);
             };
 
             Inhibit(false)

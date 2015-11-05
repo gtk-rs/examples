@@ -18,6 +18,14 @@ git = "https://github.com/gtk-rs/gdk"
 [dependencies.gtk]
 git = "https://github.com/gtk-rs/gtk"
 
+[dependencies.gl]
+version = "^0.1"
+optional = true
+
+[dependencies.shared_library]
+version = "^0.1"
+optional = true
+
 [dependencies.epoxy]
 git = "https://github.com/mjkoo/epoxy-rs.git"
 optional = true
@@ -26,7 +34,7 @@ optional = true
 gtk_3_10 = []
 gtk_3_14 = ["gtk_3_10"]
 gtk_3_16 = ["gtk_3_14"]
-opengl = ["gtk_3_16", "epoxy"]
+opengl = ["gtk_3_16", "gl", "shared_library", "epoxy"]
 
 [[bin]]
 name = "basic"
