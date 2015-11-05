@@ -30,17 +30,18 @@ mod example {
     use std::mem;
     use std::ptr;
     use std::ffi::CStr;
+    use std::process::exit;
 
     use gtk;
     use gtk::traits::*;
     use gtk::signal::Inhibit;
-    use gtk::{GLArea, Window};
+    use gtk::{GLArea, MessageDialog, Window};
 
     use epoxy;
     use epoxy::types::*;
     use epoxy::Gl;
 
-    fn compile_shader(src: &str, ty: GLenum) -> GLuint {
+    fn compile_shader(src: &str, ty: GLenum) -> Result<GLuint, String> {
         unsafe {
             let shader = Gl.CreateShader(ty);
             // Attempt to compile the shader
@@ -59,14 +60,14 @@ mod example {
                 Gl.GetShaderiv(shader, epoxy::INFO_LOG_LENGTH, &mut len);
                 let mut buf = vec![0i8; len as usize];
                 Gl.GetShaderInfoLog(shader, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
-                panic!("Error compiling shader: {}", CStr::from_ptr(buf.as_ptr()).to_string_lossy());
+                return Err(CStr::from_ptr(buf.as_ptr()).to_string_lossy().into_owned())
             }
 
-            shader
+            Ok(shader)
         }
     }
 
-    fn link_program(vs: GLuint, fs: GLuint) -> GLuint {
+    fn link_program(vs: GLuint, fs: GLuint) -> Result<GLuint, String> {
         unsafe {
             let program = Gl.CreateProgram();
             Gl.AttachShader(program, vs);
@@ -83,11 +84,19 @@ mod example {
                 Gl.GetProgramiv(program, epoxy::INFO_LOG_LENGTH, &mut len);
                 let mut buf = vec![0i8; len as usize];
                 Gl.GetProgramInfoLog(program, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
-                panic!("Error linking shader: {}", CStr::from_ptr(buf.as_ptr()).to_string_lossy());
+                return Err(CStr::from_ptr(buf.as_ptr()).to_string_lossy().into_owned())
             }
 
-            program
+            Ok(program)
         }
+    }
+
+    pub fn escape_markup(markup: &str) -> String {
+        markup.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\"", "&quot;")
+            .replace("'", "&apos;")
     }
 
     pub fn main() {
@@ -97,16 +106,26 @@ mod example {
         }
 
         let window = Window::new(gtk::WindowType::Toplevel).unwrap();
-
         let glarea = GLArea::new().unwrap();
+        let error_dialog = MessageDialog::new(Some(&window), gtk::DIALOG_MODAL,
+            gtk::MessageType::Error, gtk::ButtonsType::Ok).unwrap();
 
         window.connect_delete_event(|_, _| {
             gtk::main_quit();
             Inhibit(false)
         });
 
-        glarea.connect_realize(clone!(glarea; |_widget| {
+        glarea.connect_realize(clone!(glarea, error_dialog; |_widget| {
             glarea.make_current();
+
+            fn fatal_error(error_dialog: &MessageDialog, message: &str) {
+                error_dialog.set_markup(&*escape_markup(message));
+                error_dialog.run();
+                error_dialog.hide();
+
+                // Can't gtk::main_quit as main loop isn't running, call exit
+                exit(1);
+            }
 
             let vertices: [GLfloat; 15] = [
                 0.0, 0.5, 1.0, 0.0, 0.0,
@@ -138,9 +157,18 @@ mod example {
                     color = vec4(vertex_color, 1.0);
                 }"#;
 
-            let vs = compile_shader(vert_shader_src, epoxy::VERTEX_SHADER);
-            let fs = compile_shader(frag_shader_src, epoxy::FRAGMENT_SHADER);
-            let program = link_program(vs, fs);
+            let vs = match compile_shader(vert_shader_src, epoxy::VERTEX_SHADER) {
+                Ok(v) => v,
+                Err(e) => { fatal_error(&error_dialog, &*format!("Error compiling vertex shader: {}", e)); 0 },
+            };
+            let fs = match compile_shader(frag_shader_src, epoxy::FRAGMENT_SHADER) {
+                Ok(v) => v,
+                Err(e) => { fatal_error(&error_dialog, &*format!("Error compiling fragment shader: {}", e)); 0 },
+            };
+            let program = match link_program(vs, fs) {
+                Ok(v) => v,
+                Err(e) => { fatal_error(&error_dialog, &*format!("Error linking shader: {}", e)); 0 },
+            };
 
             let mut vao: GLuint = 0;
             let mut vbo: GLuint = 0;
