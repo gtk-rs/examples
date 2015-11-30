@@ -43,10 +43,10 @@ fn main() {
 
     window.add(&vbox);
 
-    open_button.connect_clicked(move |_| {
+    open_button.connect_clicked(|_| {
         // TODO move this to a impl?
         let file_chooser = gtk::FileChooserDialog::new(
-            "Open File", None, gtk::FileChooserAction::Open,
+            "Open File", Some(&window), gtk::FileChooserAction::Open,
             [("Open", gtk::ResponseType::Ok), ("Cancel", gtk::ResponseType::Cancel)]);
         if file_chooser.run() == gtk::ResponseType::Ok as i32 {
             let filename = file_chooser.get_filename().unwrap();
