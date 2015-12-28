@@ -7,6 +7,7 @@ use std::mem;
 use std::rc::Rc;
 use std::sync::mpsc;
 use std::thread;
+use std::time::Duration;
 
 use cairo::prelude::*;
 use cairo::{Context, Format, ImageSurface};
@@ -163,8 +164,8 @@ fn draw_initial(format: Format, width: i32, height: i32) -> (Box<[u8]>, i32) {
     (buf, image.get_stride())
 }
 
-fn draw_slow(cr: &Context, delay: u32, x: f64, y: f64, radius: f64) {
-    thread::sleep_ms(delay);
+fn draw_slow(cr: &Context, delay: u64, x: f64, y: f64, radius: f64) {
+    thread::sleep(Duration::from_millis(delay));
     cr.set_source_rgb(0., 0., 0.);
     cr.paint();
     cr.set_source_rgb(1., 1., 1.);
