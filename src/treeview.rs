@@ -4,8 +4,10 @@
 
 extern crate glib;
 extern crate gtk;
+extern crate gdk;
 
 use gtk::prelude::*;
+use glib::types::StaticType;
 
 fn append_text_column(tree: &gtk::TreeView) {
     let column = gtk::TreeViewColumn::new();
@@ -70,24 +72,62 @@ fn main() {
         left_selection.select_path(&left_store.get_path(&iter));
     }
 
-    // right pane
+    // middle pane
 
-    let right_tree = gtk::TreeView::new();
+    let middle_tree = gtk::TreeView::new();
     let column_types = [glib::Type::String];
-    let right_store = gtk::TreeStore::new(&column_types);
+    let middle_store = gtk::TreeStore::new(&column_types);
 
-    right_tree.set_model(Some(&right_store));
-    right_tree.set_headers_visible(false);
-    append_text_column(&right_tree);
+    middle_tree.set_model(Some(&middle_store));
+    middle_tree.set_headers_visible(false);
+    append_text_column(&middle_tree);
 
     for i in 0..10 {
-        let iter = right_store.append(None);
-        right_store.set_value(&iter, 0, &value);
+        let iter = middle_store.append(None);
+        middle_store.set_value(&iter, 0, &value);
 
         for _ in 0..i {
-            let child_iter = right_store.append(Some(&iter));
-            right_store.set_string(&child_iter, 0, "I'm a child node");
+            let child_iter = middle_store.append(Some(&iter));
+            middle_store.set_string(&child_iter, 0, "I'm a child node");
         }
+    }
+
+    // right pane
+    let right_tree = gtk::TreeView::new();
+    let right_column_types = [gdk::pixbuf::Pixbuf::static_type(), glib::Type::String];
+    let right_store = gtk::TreeStore::new(&right_column_types);
+    let renderer = gtk::CellRendererPixbuf::new();
+    let col = gtk::TreeViewColumn::new();
+
+    col.set_title("Picture");
+    col.pack_start(&renderer, false);
+    col.add_attribute(&renderer, "pixbuf", 0);
+
+    let renderer2 = gtk::CellRendererText::new();
+    col.pack_start(&renderer2, true);
+    col.add_attribute(&renderer2, "text", 1);
+
+    let mut value = unsafe { glib::Value::new() };
+    value.init(gdk::pixbuf::Pixbuf::static_type());
+
+    right_tree.append_column(&col);
+
+    right_tree.set_model(Some(&right_store));
+    right_tree.set_headers_visible(true);
+
+    let image = match gdk::pixbuf::Pixbuf::new_from_file("./resources/eye.png") {
+        Ok(i) => i,
+        Err(e) => {
+            println!("Error: {}", e);
+            return;
+        }
+    };
+    unsafe { value.set(&image) };
+    for _ in 0..10 {
+        let iter = right_store.append(None);
+
+        right_store.set_value(&iter, 0, &value);
+        right_store.set_string(&iter, 1, "I'm a node with an image");
     }
 
     // display the panes
@@ -96,6 +136,7 @@ fn main() {
 
     split_pane.set_size_request(-1, -1);
     split_pane.add(&left_tree);
+    split_pane.add(&middle_tree);
     split_pane.add(&right_tree);
 
     window.add(&split_pane);
