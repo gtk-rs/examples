@@ -34,14 +34,8 @@ fn main() {
 
     // test Value
 
-    let hello = String::from("Hello world !");
-    let value = unsafe {
-        let mut value = glib::Value::new();
-        value.init(glib::Type::String);
-        value.set(&hello);
-        println!("gvalue.get example : {}", value.get::<String>());
-        value
-    };
+    let value = glib::Value::from("Hello world!");
+    println!("gvalue.get example: {}", value.get::<String>().unwrap());
 
     // left pane
 
@@ -63,7 +57,7 @@ fn main() {
 
     for _ in 0..10 {
         let iter = left_store.append();
-        left_store.set_string(&iter, 0, "I'm in a list");
+        left_store.set_value(&iter, 0, &"I'm in a list".into());
 
         // select this row as a test
         //
@@ -82,11 +76,11 @@ fn main() {
 
     for i in 0..10 {
         let iter = right_store.append(None);
-        right_store.set_value(&iter, 0, &value);
+        right_store.set_value(&iter, 0, &format!("Hello {}", i).into());
 
         for _ in 0..i {
             let child_iter = right_store.append(Some(&iter));
-            right_store.set_string(&child_iter, 0, "I'm a child node");
+            right_store.set_value(&child_iter, 0, &"I'm a child node".into());
         }
     }
 
