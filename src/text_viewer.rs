@@ -43,7 +43,7 @@ fn main() {
     window.add(&vbox);
 
     let window1 = window.clone();
-    open_button.connect_clicked(move |_| {
+    ToolButtonExt::connect_clicked(&open_button, move |_| {
         // TODO move this to a impl?
         let file_chooser = gtk::FileChooserDialog::new(
             Some("Open File"), Some(&window1), gtk::FileChooserAction::Open);

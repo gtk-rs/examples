@@ -34,7 +34,7 @@ impl Notebook {
         let index = self.notebook.append_page(&widget, Some(&tab));
 
         let notebook_clone = self.notebook.clone();
-        button.connect_clicked(move |_| {
+        ButtonExt::connect_clicked(&button, move |_| {
             let index = notebook_clone.page_num(&widget).unwrap();
             notebook_clone.remove_page(Some(index));
         });

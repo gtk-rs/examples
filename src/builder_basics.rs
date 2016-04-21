@@ -28,7 +28,7 @@ mod example {
             Inhibit(false)
         });
 
-        bigbutton.connect_clicked(move |_| {
+        ButtonExt::connect_clicked(&bigbutton, move |_| {
             dialog.run();
             dialog.hide();
         });
