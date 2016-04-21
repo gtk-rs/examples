@@ -151,7 +151,7 @@ fn main() {
     });
 
     let entry_clone = entry.clone();
-    button.connect_clicked(clone!(window => move |_| {
+    ButtonExt::connect_clicked(&button, clone!(window => move |_| {
         let dialog = gtk::Dialog::new_with_buttons(Some("Hello!"), Some(&window), gtk::DIALOG_MODAL,
             &[("No", 0), ("Yes", 1), ("Yes!", 2)]);
 
@@ -163,16 +163,16 @@ fn main() {
     }));
 
     // use a plain function instead of a closure
-    button_about.connect_clicked(about_clicked);
+    ButtonExt::connect_clicked(&button_about, about_clicked);
 
-    button_font.connect_clicked(clone!(window => move |_| {
+    ButtonExt::connect_clicked(&button_font, clone!(window => move |_| {
         let dialog = gtk::FontChooserDialog::new(Some("Font chooser test"), Some(&window));
 
         dialog.run();
         dialog.destroy();
     }));
 
-    button_recent.connect_clicked(clone!(window => move |_| {
+    ButtonExt::connect_clicked(&button_recent, clone!(window => move |_| {
         let dialog = gtk::RecentChooserDialog::new(Some("Recent chooser test"), Some(&window));
         dialog.add_buttons(&[
             ("Ok", gtk::ResponseType::Ok as i32),
@@ -183,7 +183,7 @@ fn main() {
         dialog.destroy();
     }));
 
-    file_button.connect_clicked(clone!(window => move |_| {
+    ButtonExt::connect_clicked(&file_button, clone!(window => move |_| {
         //entry.set_text("Clicked!");
         let dialog = gtk::FileChooserDialog::new(Some("Choose a file"), Some(&window),
             gtk::FileChooserAction::Open);
@@ -200,7 +200,7 @@ fn main() {
         println!("Files: {:?}", files);
     }));
 
-    app_button.connect_clicked(clone!(window => move |_| {
+    ButtonExt::connect_clicked(&app_button, clone!(window => move |_| {
         //entry.set_text("Clicked!");
         let dialog = gtk::AppChooserDialog::new_for_content_type(Some(&window), gtk::DIALOG_MODAL,
             "sh");
