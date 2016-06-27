@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.0 -->
+<interface>
+  <requires lib="gtk+" version="3.0"/>
+  <object class="GtkWindow" id="window">
+    <property name="can_focus">False</property>
+    <property name="border_width">10</property>
+    <property name="title" translatable="yes">First GTK+ Program</property>
+    <property name="window_position">center</property>
+    <property name="default_width">350</property>
+    <property name="default_height">70</property>
+    <child>
+      <object class="GtkButton" id="clickme_button">
+        <property name="label" translatable="yes">Click me!</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+      </object>
+    </child>
+  </object>
+</interface>
