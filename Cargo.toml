@@ -5,6 +5,7 @@ authors = ["The Gtk-rs Project Developers"]
 
 [dependencies]
 glib = "^0"
+gio = "^0"
 gdk = "^0"
 gdk-pixbuf = "^0"
 gtk = "^0"
@@ -18,6 +19,9 @@ gtk_3_18 = ["gtk_3_16"] #for CI tools
 
 [[bin]]
 name = "basic"
+
+[[bin]]
+name = "basic_application"
 
 [[bin]]
 name = "builder_basics"
