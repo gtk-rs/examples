@@ -66,7 +66,7 @@ fn main() {
 
     for i in 1..4 {
         let title = format!("sheet {}", i);
-        let label = gtk::Label::new(Some(&title));
+        let label = gtk::Label::new(Some(title.as_str()));
         notebook.create_tab(&title, label.upcast());
     }
 
