@@ -1,6 +1,6 @@
 //! # RadioButton Sample
 //!
-//! This sample demonstrates how to create ToggleButton's and how the first parameter works
+//! This sample demonstrates how to create RadioButton's and how there first parameter work
 
 #![crate_type = "bin"]
 
@@ -28,14 +28,14 @@ fn main() {
 
     let hbox = gtk::Box::new(gtk::Orientation::Horizontal, 0);
 
-    // All Boxes for themselves
+    // All RadioButton for themselves
     let vbox = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let radio_size_10 = gtk::RadioButton::new_with_label_from_widget(None, "10x10");
     let radio_size_20 = gtk::RadioButton::new_with_label_from_widget(None, "20x20");
     let radio_size_30 = gtk::RadioButton::new_with_label_from_widget(None, "30x30");
     let radio_size_40 = gtk::RadioButton::new_with_label_from_widget(None, "40x40");
 
-    vbox.pack_start(&gtk::Label::new("Each box separately"), true, false, 0);
+    vbox.pack_start(&gtk::Label::new("All RadioButton for themselves"), true, false, 0);
     vbox.pack_start(&radio_size_10, false, false, 0);
     vbox.pack_start(&radio_size_20, false, false, 0);
     vbox.pack_start(&radio_size_30, false, false, 0);
@@ -45,14 +45,14 @@ fn main() {
 
     hbox.pack_start(&vbox, false, false, 0);
 
-    // And Boxes in Box
+    // RadioButton child of RadioButton `10x10`
     let vbox = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let radio_size_10 = gtk::RadioButton::new_with_label_from_widget(None, "10x10");
     let radio_size_20 = gtk::RadioButton::new_with_label_from_widget(Some(&radio_size_10), "20x20");
     let radio_size_30 = gtk::RadioButton::new_with_label_from_widget(Some(&radio_size_10), "30x30");
     let radio_size_40 = gtk::RadioButton::new_with_label_from_widget(Some(&radio_size_10), "40x40");
 
-    vbox.pack_start(&gtk::Label::new("All Boxes child of `10x10`"), true, false, 0);
+    vbox.pack_start(&gtk::Label::new("RadioButton child of RadioButton `10x10`"), true, false, 0);
     vbox.pack_start(&radio_size_10, false, false, 0);
     vbox.pack_start(&radio_size_20, false, false, 0);
     vbox.pack_start(&radio_size_30, false, false, 0);
