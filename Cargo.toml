@@ -39,6 +39,9 @@ name = "gtktest"
 name = "notebook"
 
 [[bin]]
+name = "radiobutton"
+
+[[bin]]
 name = "sync_widgets"
 
 [[bin]]
