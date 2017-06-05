@@ -48,10 +48,7 @@ mod example {
     }
 
     pub fn sub_main() {
-        if gtk::init().is_err() {
-            println!("Failed to initialize GTK.");
-            return;
-        }
+        gtk::init().expect("Failed to initialize GTK.");
         println!("Major: {}, Minor: {}", gtk::get_major_version(), gtk::get_minor_version());
         let glade_src = include_str!("gtktest.glade");
         let builder = Builder::new_from_string(glade_src);

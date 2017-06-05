@@ -58,10 +58,7 @@ fn generate_new_id(windows: Rc<RefCell<HashMap<usize, gtk::Window>>>) -> usize {
 }
 
 fn main() {
-    if gtk::init().is_err() {
-        println!("Failed to initialize GTK.");
-        return;
-    }
+    gtk::init().expect("Failed to initialize GTK.");
 
     let windows: Rc<RefCell<HashMap<usize, gtk::Window>>> = Rc::new(RefCell::new(HashMap::new()));
     let window = create_main_window();

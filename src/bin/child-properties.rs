@@ -10,7 +10,7 @@ use gtk::{BoxExt, Button, ContainerExt, Inhibit, Label, PackType, WidgetExt, Win
 use gtk::Orientation::Vertical;
 
 fn main() {
-    gtk::init().unwrap();
+    gtk::init().expect("Failed to initialize GTK.");
 
     let vbox = gtk::Box::new(Vertical, 0);
 

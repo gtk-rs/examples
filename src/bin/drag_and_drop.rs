@@ -9,10 +9,7 @@ extern crate gtk;
 use gtk::prelude::*;
 
 fn main() {
-    if gtk::init().is_err() {
-        println!("Failed to initialize GTK.");
-        return;
-    }
+    gtk::init().expect("Failed to initialize GTK.");
 
     // Configure button as drag source for text
     let button = gtk::Button::new_with_label("Drag here");
