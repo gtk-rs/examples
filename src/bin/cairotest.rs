@@ -10,10 +10,7 @@ use cairo::enums::{FontSlant, FontWeight};
 use cairo::Context;
 
 fn main() {
-    if gtk::init().is_err() {
-        println!("Failed to initialize GTK.");
-        return;
-    }
+    gtk::init().expect("Failed to initialize GTK.");
 
     drawable(500, 500, |_, cr| {
         cr.set_dash(&[3., 2., 1.], 1.);

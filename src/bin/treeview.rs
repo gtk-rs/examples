@@ -23,10 +23,7 @@ fn append_text_column(tree: &TreeView) {
 }
 
 fn main() {
-    if gtk::init().is_err() {
-        println!("Failed to initialize GTK.");
-        return;
-    }
+    gtk::init().expect("Failed to initialize GTK.");
 
     let window = Window::new(WindowType::Toplevel);
 

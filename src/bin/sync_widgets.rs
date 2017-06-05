@@ -8,10 +8,7 @@ use gtk::Builder;
 use gtk::prelude::*;
 
 fn main() {
-    if gtk::init().is_err() {
-        println!("Failed to initialize GTK.");
-        return;
-    }
+    gtk::init().expect("Failed to initialize GTK.");
     let glade_src = include_str!("sync_widgets.glade");
     let builder = Builder::new();
     builder.add_from_string(glade_src).unwrap();
