@@ -27,10 +27,7 @@ mod example {
     };
 
     pub fn main() {
-        if gtk::init().is_err() {
-            println!("Failed to initialize GTK.");
-            return;
-        }
+        gtk::init().expect("Failed to initialize GTK.");
         let glade_src = include_str!("grid.glade");
         let builder = Builder::new_from_string(glade_src);
 

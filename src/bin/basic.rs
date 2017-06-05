@@ -9,10 +9,7 @@ extern crate gtk;
 use gtk::prelude::*;
 
 fn main() {
-    if gtk::init().is_err() {
-        println!("Failed to initialize GTK.");
-        return;
-    }
+    gtk::init().expect("Failed to initialize GTK.");
 
     let window = gtk::Window::new(gtk::WindowType::Toplevel);
 
