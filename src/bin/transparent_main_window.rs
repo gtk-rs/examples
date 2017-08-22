@@ -2,7 +2,6 @@
 //!
 //! This example demonstrates how to create a main window with a transparent background.
 
-
 extern crate gtk;
 extern crate gdk;
 extern crate cairo;
