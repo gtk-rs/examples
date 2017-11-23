@@ -12,6 +12,12 @@ or to enable GTK 3.10 examples as well:
 > cargo build --features gtk_3_10
 ```
 
+To run the examples:
+```
+cargo run --example multi_windows
+
+```
+
 And then run the executables. Please be sure to have installed all the required libraries before building examples (the list is available on [gtk](https://github.com/gtk-rs/gtk/).
 
 ## LICENSE
