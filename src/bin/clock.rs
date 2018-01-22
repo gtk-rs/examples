@@ -12,24 +12,6 @@ use gtk::prelude::*;
 use std::env::args;
 use chrono::Local;
 
-// make moving clones into closures more convenient
-macro_rules! clone {
-    (@param _) => ( _ );
-    (@param $x:ident) => ( $x );
-    ($($n:ident),+ => move || $body:expr) => (
-        {
-            $( let $n = $n.clone(); )+
-            move || $body
-        }
-    );
-    ($($n:ident),+ => move |$($p:tt),+| $body:expr) => (
-        {
-            $( let $n = $n.clone(); )+
-            move |$(clone!(@param $p),)+| $body
-        }
-    );
-}
-
 
 fn current_time() -> String {
     return format!("{}", Local::now().format("%Y-%m-%d %H:%M:%S"));
@@ -42,11 +24,6 @@ fn build_ui(application: &gtk::Application) {
     window.set_border_width(10);
     window.set_position(gtk::WindowPosition::Center);
     window.set_default_size(260, 40);
-
-    window.connect_delete_event(clone!(window => move |_, _| {
-        window.destroy();
-        Inhibit(false)
-    }));
 
     let time = current_time();
     let label = gtk::Label::new(None);

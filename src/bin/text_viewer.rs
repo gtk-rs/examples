@@ -66,11 +66,6 @@ pub fn build_ui(application: &gtk::Application) {
         file_chooser.destroy();
     }));
 
-    window.connect_delete_event(clone!(window => move |_, _| {
-        window.destroy();
-        Inhibit(false)
-    }));
-
     window.show_all();
 }
 

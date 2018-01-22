@@ -55,11 +55,6 @@ mod example {
             grid.set_cell_left_attach(&button7, new_left_attach);
         }));
 
-        window.connect_delete_event(clone!(window => move |_, _| {
-            window.destroy();
-            Inhibit(false)
-        }));
-
         window.show_all();
     }
 
