@@ -9,7 +9,7 @@ extern crate gtk;
 use gio::prelude::*;
 use gtk::{
     AboutDialog, AboutDialogExt, BoxExt, ContainerExt, DialogExt, GtkApplicationExt, GtkWindowExt,
-    Inhibit, LabelExt, SwitchExt, ToVariant, WidgetExt,
+    LabelExt, SwitchExt, ToVariant, WidgetExt,
 };
 
 use std::env::args;
@@ -129,11 +129,6 @@ fn build_ui(application: &gtk::Application) {
     window.set_border_width(10);
     window.set_position(gtk::WindowPosition::Center);
     window.set_default_size(350, 70);
-
-    window.connect_delete_event(clone!(window => move |_, _| {
-        window.destroy();
-        Inhibit(false)
-    }));
 
     let v_box = gtk::Box::new(gtk::Orientation::Vertical, 10);
     let label = gtk::Label::new("Nothing happened yet");
