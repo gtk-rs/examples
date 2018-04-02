@@ -11,7 +11,7 @@ extern crate chrono;
 #[cfg(feature = "gtk_3_12")]
 mod pomodoro {
     use gtk;
-    
+
     use chrono::Duration;
 
     use std::rc::Rc;
