@@ -9,6 +9,24 @@ extern crate gtk;
 extern crate pango;
 extern crate chrono;
 
+// make moving clones into closures more convenient
+macro_rules! clone {
+    (@param _) => ( _ );
+    (@param $x:ident) => ( $x );
+    ($($n:ident),+ => move || $body:expr) => (
+        {
+            $( let $n = $n.clone(); )+
+            move || $body
+        }
+    );
+    ($($n:ident),+ => move |$($p:tt),+| $body:expr) => (
+        {
+            $( let $n = $n.clone(); )+
+            move |$(clone!(@param $p),)+| $body
+        }
+    );
+}
+
 #[cfg(feature = "gtk_3_12")]
 mod pomodoro {
     use gio;
@@ -181,7 +199,8 @@ mod pomodoro {
     }
 
     fn build_ui(application: &gtk::Application) {
-        let window = gtk::Window::new(gtk::WindowType::Toplevel);
+        // let window = gtk::Window::new(gtk::WindowType::Toplevel);
+        let window = gtk::ApplicationWindow::new(application);
         window.set_application(application);
         window.set_title("tomaty: gtk::Focus");
         window.set_border_width(5);
@@ -190,10 +209,10 @@ mod pomodoro {
         window.set_position(gtk::WindowPosition::Center);
         window.set_default_size(350, 70);
 
-        window.connect_delete_event(|_, _| {
-            gtk::main_quit();
+        window.connect_delete_event(clone!(window => move|_, _| {
+            window.destroy();
             Inhibit(false)
-        });
+        }));
 
         // create notebook, add as main and sole child widget of window
         let notebook = make_tomaty_notebook();
@@ -255,10 +274,6 @@ mod pomodoro {
     }
 
     pub fn main() {
-        if gtk::init().is_err() {
-            println!("Failed to initialize GTK.");
-            return;
-        }
         let application =
             gtk::Application::new("com.github.pomodoro",
                                   gio::ApplicationFlags::empty())
