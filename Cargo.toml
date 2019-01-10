@@ -17,6 +17,7 @@ gdk-pixbuf = "^0"
 gtk = "^0"
 pango = "^0"
 cairo-rs = { version = "^0", features = ["png"] }
+cascade = "0.1.2"
 
 [features]
 #default = ["gtk_3_22_30", "futures-stable"]
@@ -91,6 +92,11 @@ name = "notebook"
 
 [[bin]]
 name = "pango_attributes"
+
+[[bin]]
+name = "progress-tracker"
+path = "src/bin/progress_tracker.rs"
+required-features = ["gtk/v3_22"]
 
 [[bin]]
 name = "simple_treeview"
