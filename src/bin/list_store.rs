@@ -7,20 +7,6 @@ use gtk::prelude::*;
 use std::env::args;
 use std::rc::Rc;
 
-fn main() {
-    let application =
-        gtk::Application::new("com.github.gtk-rs.examples.list-store", Default::default())
-            .expect("Initialization failed...");
-
-    application.connect_startup(|app| {
-        build_ui(app);
-    });
-
-    application.connect_activate(|_| {});
-
-    application.run(&args().collect::<Vec<_>>());
-}
-
 #[repr(i32)]
 enum Columns {
     Fixed = 0,
@@ -44,10 +30,10 @@ fn build_ui(application: &gtk::Application) {
     let vbox = gtk::Box::new(gtk::Orientation::Vertical, 8);
     window.add(&vbox);
 
-    let label = gtk::Label::new(
+    let label = gtk::Label::new(Some(
         "This is the bug list (note: not based on real data, it would be \
          nice to have a nice ODBC interface to bugzilla or so, though).",
-    );
+    ));
     vbox.add(&label);
 
     let sw = gtk::ScrolledWindow::new(None::<&gtk::Adjustment>, None::<&gtk::Adjustment>);
@@ -304,4 +290,20 @@ fn spinner_timeout(model: &gtk::ListStore) -> Continue {
     model.set_value(&iter, Columns::Active as i32 as u32, &true.to_value());
 
     Continue(true)
+}
+
+fn main() {
+    let application = gtk::Application::new(
+        Some("com.github.gtk-rs.examples.list-store"),
+        Default::default(),
+    )
+    .expect("Initialization failed...");
+
+    application.connect_startup(|app| {
+        build_ui(app);
+    });
+
+    application.connect_activate(|_| {});
+
+    application.run(&args().collect::<Vec<_>>());
 }

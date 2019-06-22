@@ -23,22 +23,21 @@ macro_rules! upgrade_weak {
 
 struct Notebook {
     notebook: gtk::Notebook,
-    tabs: Vec<gtk::Box>
+    tabs: Vec<gtk::Box>,
 }
 
 impl Notebook {
     fn new() -> Notebook {
         Notebook {
             notebook: gtk::Notebook::new(),
-            tabs: Vec::new()
+            tabs: Vec::new(),
         }
     }
 
     fn create_tab(&mut self, title: &str, widget: Widget) -> u32 {
-        let close_image = gtk::Image::new_from_icon_name("window-close",
-                                                         IconSize::Button.into());
+        let close_image = gtk::Image::new_from_icon_name(Some("window-close"), IconSize::Button);
         let button = gtk::Button::new();
-        let label = gtk::Label::new(title);
+        let label = gtk::Label::new(Some(title));
         let tab = gtk::Box::new(Orientation::Horizontal, 0);
 
         button.set_relief(ReliefStyle::None);
@@ -54,8 +53,9 @@ impl Notebook {
         let notebook_weak = self.notebook.downgrade();
         button.connect_clicked(move |_| {
             let notebook = upgrade_weak!(notebook_weak);
-            let index = notebook.page_num(&widget)
-                                .expect("Couldn't get page_num from notebook");
+            let index = notebook
+                .page_num(&widget)
+                .expect("Couldn't get page_num from notebook");
             notebook.remove_page(Some(index));
         });
 
@@ -76,7 +76,7 @@ fn build_ui(application: &gtk::Application) {
 
     for i in 1..4 {
         let title = format!("sheet {}", i);
-        let label = gtk::Label::new(&*title);
+        let label = gtk::Label::new(Some(&*title));
         notebook.create_tab(&title, label.upcast());
     }
 
@@ -85,9 +85,11 @@ fn build_ui(application: &gtk::Application) {
 }
 
 fn main() {
-    let application = gtk::Application::new("com.github.gtk-rs.examples.notebook",
-                                            Default::default())
-                                       .expect("Initialization failed...");
+    let application = gtk::Application::new(
+        Some("com.github.gtk-rs.examples.notebook"),
+        Default::default(),
+    )
+    .expect("Initialization failed...");
 
     application.connect_activate(|app| {
         build_ui(app);

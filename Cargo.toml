@@ -7,24 +7,45 @@ autobins = false
 [dependencies]
 chrono = "0.4"
 url = "1.4"
-futures-preview = { version = "0.2", optional = true }
-atk = "^0"
-glib-sys = "^0"
-gobject-sys = "^0"
-glib = "^0"
-gio = "^0"
-gdk = "^0"
-gdk-pixbuf = "^0"
-gtk = "^0"
-pango = "^0"
-cairo-rs = { version = "^0", features = ["png"] }
+futures-preview = { version = "0.3.0-alpha.15", optional = true}
+
+[dependencies.atk]
+git = "https://github.com/gtk-rs/atk"
+
+[dependencies.glib-sys]
+git = "https://github.com/gtk-rs/sys"
+
+[dependencies.gobject-sys]
+git = "https://github.com/gtk-rs/sys"
+
+[dependencies.glib]
+git = "https://github.com/gtk-rs/glib"
+
+[dependencies.gio]
+git = "https://github.com/gtk-rs/gio"
+
+[dependencies.cairo-rs]
+git = "https://github.com/gtk-rs/cairo"
+features = ["png"]
+
+[dependencies.pango]
+git = "https://github.com/gtk-rs/pango"
+
+[dependencies.gdk-pixbuf]
+git = "https://github.com/gtk-rs/gdk-pixbuf"
+
+[dependencies.gdk]
+git = "https://github.com/gtk-rs/gdk"
+
+[dependencies.gtk]
+git = "https://github.com/gtk-rs/gtk"
 
 [features]
-#default = ["gtk_3_22_30", "futures-stable", "subclassing"]
+#default = ["gtk_3_22_30", "futures", "subclassing"]
 gtk_3_18 = ["gtk/v3_18", "gdk-pixbuf/v2_32", "gdk/v3_18", "gio/v2_46", "glib/v2_46", "pango/v1_38"] #for CI tools
 gtk_3_22_30 = ["gtk_3_18", "gtk/v3_22_30", "gdk-pixbuf/v2_36", "gdk/v3_22", "gio/v2_56", "glib/v2_56", "pango/v1_42"] #for CI tools
 gtk_3_24 = ["gtk_3_22_30", "gtk/v3_24", "atk/v2_30", "gdk-pixbuf/v2_36_8", "gdk/v3_24", "gio/v2_58", "glib/v2_58"] #for CI tools
-futures-stable = ["futures-preview", "glib/futures", "gio/futures"]
+futures = ["futures-preview", "glib/futures", "gio/futures"]
 subclassing = ["glib/subclassing"]
 
 [[bin]]
@@ -37,6 +58,9 @@ name = "basic"
 name = "builder_basics"
 
 [[bin]]
+name = "builders"
+
+[[bin]]
 name = "cairo_png"
 
 [[bin]]
@@ -47,6 +71,9 @@ name = "cairotest"
 
 [[bin]]
 name = "child-properties"
+
+[[bin]]
+name = "clipboard_simple"
 
 [[bin]]
 name = "clock"
@@ -62,11 +89,12 @@ name = "drag_and_drop_textview"
 
 [[bin]]
 name = "gio_futures"
-required-features = ["futures-stable"]
+required-features = ["futures"]
 
-#[[bin]]
-#name = "gio_futures_await"
-#required-features = ["futures-nightly"]
+[[bin]]
+name = "gio_futures_await"
+required-features = ["futures"]
+edition = "2018"
 
 [[bin]]
 name = "grid"
@@ -123,3 +151,6 @@ name = "treeview"
 
 [[bin]]
 name = "list_store"
+
+[[bin]]
+name = "entry_completion"

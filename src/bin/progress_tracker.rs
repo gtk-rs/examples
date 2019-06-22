@@ -28,12 +28,13 @@ macro_rules! upgrade_weak {
 }
 
 pub fn main() {
-    glib::set_program_name("Progress Tracker".into());
+    glib::set_program_name(Some("Progress Tracker"));
 
     let application = gtk::Application::new(
-        "com.github.progress-tracker",
+        Some("com.github.progress-tracker"),
         gio::ApplicationFlags::empty(),
-    ).expect("initialization failed");
+    )
+    .expect("initialization failed");
 
     application.connect_startup(|app| {
         let application = Application::new(app);
@@ -90,33 +91,33 @@ impl Application {
 
             let active = active.clone();
             let widgets = widgets.clone();
-            rx.attach(None, move |value| {
-                match value {
-                    Some(value) => {
-                        widgets
-                            .main_view
-                            .progress
-                            .set_fraction(f64::from(value) / 10.0);
+            rx.attach(None, move |value| match value {
+                Some(value) => {
+                    widgets
+                        .main_view
+                        .progress
+                        .set_fraction(f64::from(value) / 10.0);
 
-                        if value == 10 {
+                    if value == 10 {
+                        widgets
+                            .view_stack
+                            .set_visible_child(&widgets.complete_view.container);
+
+                        let widgets = widgets.clone();
+                        gtk::timeout_add(1500, move || {
+                            widgets.main_view.progress.set_fraction(0.0);
                             widgets
                                 .view_stack
-                                .set_visible_child(&widgets.complete_view.container);
-
-                            let widgets = widgets.clone();
-                            gtk::timeout_add(1500, move || {
-                                widgets.main_view.progress.set_fraction(0.0);
-                                widgets.view_stack.set_visible_child(&widgets.main_view.container);
-                                gtk::Continue(false)
-                            });
-                        }
-
-                        glib::Continue(true)
+                                .set_visible_child(&widgets.main_view.container);
+                            gtk::Continue(false)
+                        });
                     }
-                    None => {
-                        active.set(false);
-                        glib::Continue(false)
-                    }
+
+                    glib::Continue(true)
+                }
+                None => {
+                    active.set(false);
+                    glib::Continue(false)
                 }
             });
         });
@@ -146,9 +147,9 @@ impl Widgets {
         let header = Header::new();
 
         let window = gtk::ApplicationWindow::new(application);
-        window.set_icon_name("package-x-generic");
+        window.set_icon_name(Some("package-x-generic"));
         window.set_property_window_position(gtk::WindowPosition::Center);
-        window.set_titlebar(&header.container);
+        window.set_titlebar(Some(&header.container));
         window.add(&view_stack);
         window.show_all();
         window.set_default_size(500, 250);
@@ -174,7 +175,7 @@ pub struct Header {
 impl Header {
     pub fn new() -> Self {
         let container = gtk::HeaderBar::new();
-        container.set_title("Progress Tracker");
+        container.set_title(Some("Progress Tracker"));
         container.set_show_close_button(true);
 
         Header { container }
@@ -212,7 +213,7 @@ pub struct MainView {
 impl MainView {
     pub fn new() -> Self {
         let progress = gtk::ProgressBar::new();
-        progress.set_text("Progress Bar");
+        progress.set_text(Some("Progress Bar"));
         progress.set_show_text(true);
         progress.set_hexpand(true);
 

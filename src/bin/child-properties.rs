@@ -9,8 +9,8 @@ extern crate gtk;
 
 use gio::prelude::*;
 use gtk::prelude::*;
-use gtk::{ApplicationWindow, Button, Label, PackType};
 use gtk::Orientation::Vertical;
+use gtk::{ApplicationWindow, Button, Label, PackType};
 
 use std::env::args;
 use std::str::FromStr;
@@ -45,7 +45,7 @@ fn build_ui(application: &gtk::Application) {
     vbox.set_child_padding(&plus_button, 50);
     vbox.set_child_pack_type(&plus_button, PackType::End);
 
-    let counter_label = Label::new("0");
+    let counter_label = Label::new(Some("0"));
     vbox.add(&counter_label);
 
     let minus_button = Button::new_with_label("-");
@@ -75,9 +75,11 @@ fn build_ui(application: &gtk::Application) {
 }
 
 fn main() {
-    let application = gtk::Application::new("com.github.gtk-rs.examples.child_properties",
-                                            Default::default())
-                                       .expect("Initialization failed...");
+    let application = gtk::Application::new(
+        Some("com.github.gtk-rs.examples.child_properties"),
+        Default::default(),
+    )
+    .expect("Initialization failed...");
 
     application.connect_activate(|app| {
         build_ui(app);

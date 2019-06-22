@@ -1,5 +1,5 @@
-extern crate glib;
 extern crate gio;
+extern crate glib;
 extern crate gtk;
 
 use gio::prelude::*;
@@ -42,8 +42,13 @@ macro_rules! upgrade_weak {
     };
 }
 
-fn create_sub_window(application: &gtk::Application, title: &str, main_window_entry: &gtk::Entry, id: usize,
-                     windows: &Rc<RefCell<HashMap<usize, glib::WeakRef<gtk::Window>>>>) {
+fn create_sub_window(
+    application: &gtk::Application,
+    title: &str,
+    main_window_entry: &gtk::Entry,
+    id: usize,
+    windows: &Rc<RefCell<HashMap<usize, glib::WeakRef<gtk::Window>>>>,
+) {
     let window = gtk::Window::new(gtk::WindowType::Toplevel);
 
     application.add_window(&window);
@@ -90,23 +95,26 @@ fn generate_new_id(windows: &HashMap<usize, glib::WeakRef<gtk::Window>>) -> usiz
 }
 
 fn build_ui(application: &gtk::Application) {
-    let windows: Rc<RefCell<HashMap<usize, glib::WeakRef<gtk::Window>>>> = Rc::new(RefCell::new(HashMap::new()));
+    let windows: Rc<RefCell<HashMap<usize, glib::WeakRef<gtk::Window>>>> =
+        Rc::new(RefCell::new(HashMap::new()));
     let window = create_main_window(application);
 
     // Why not changing all sub-windows' title at once?
     let windows_title_entry = gtk::Entry::new();
-    windows_title_entry.set_placeholder_text("Update all sub-windows' title");
+    windows_title_entry.set_placeholder_text(Some("Update all sub-windows' title"));
     windows_title_entry.connect_changed(clone!(windows => move |windows_title_entry| {
         // When the entry's text is updated, we update the title of every sub windows.
         let text = windows_title_entry.get_buffer().get_text();
         for window in windows.borrow().values() {
-            window.upgrade().map(|w| w.set_title(&text));
+            if let Some(w) = window.upgrade() {
+                w.set_title(&text)
+            }
         }
     }));
 
     let entry = gtk::Entry::new();
     entry.set_editable(false);
-    entry.set_placeholder_text("Events notification will be sent here");
+    entry.set_placeholder_text(Some("Events notification will be sent here"));
 
     // Now let's create a button to create a looooot of new windows!
     let button = gtk::Button::new_with_label("Create new window");
@@ -135,9 +143,11 @@ fn build_ui(application: &gtk::Application) {
 }
 
 fn main() {
-    let application = gtk::Application::new("com.github.gtk-rs.examples.multi_windows",
-                                            Default::default())
-                                       .expect("Initialization failed...");
+    let application = gtk::Application::new(
+        Some("com.github.gtk-rs.examples.multi_windows"),
+        Default::default(),
+    )
+    .expect("Initialization failed...");
 
     application.connect_activate(|app| {
         build_ui(app);

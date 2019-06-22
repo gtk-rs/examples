@@ -40,27 +40,31 @@ fn build_system_menu(application: &gtk::Application) {
 
     // The first argument is the label of the menu item whereas the second is the action name. It'll
     // makes more sense when you'll be reading the "add_actions" function.
-    menu.append("Quit", "app.quit");
+    menu.append(Some("Quit"), Some("app.quit"));
 
-    switch_menu.append("Switch", "app.switch");
-    menu_bar.append_submenu("_Switch", &switch_menu);
+    switch_menu.append(Some("Switch"), Some("app.switch"));
+    menu_bar.append_submenu(Some("_Switch"), &switch_menu);
 
-    settings_menu.append("Sub another", "app.sub_another");
-    submenu.append("Sub sub another", "app.sub_sub_another");
-    submenu.append("Sub sub another2", "app.sub_sub_another2");
-    settings_menu.append_submenu("Sub menu", &submenu);
-    menu_bar.append_submenu("_Another", &settings_menu);
+    settings_menu.append(Some("Sub another"), Some("app.sub_another"));
+    submenu.append(Some("Sub sub another"), Some("app.sub_sub_another"));
+    submenu.append(Some("Sub sub another2"), Some("app.sub_sub_another2"));
+    settings_menu.append_submenu(Some("Sub menu"), &submenu);
+    menu_bar.append_submenu(Some("_Another"), &settings_menu);
 
-    more_menu.append("About", "app.about");
-    menu_bar.append_submenu("?", &more_menu);
+    more_menu.append(Some("About"), Some("app.about"));
+    menu_bar.append_submenu(Some("?"), &more_menu);
 
-    application.set_app_menu(&menu);
-    application.set_menubar(&menu_bar);
+    application.set_app_menu(Some(&menu));
+    application.set_menubar(Some(&menu_bar));
 }
 
 // This function creates "actions" which connect on the declared actions from the menu items.
-fn add_actions(application: &gtk::Application, switch: &gtk::Switch, label: &gtk::Label,
-               window: &gtk::ApplicationWindow) {
+fn add_actions(
+    application: &gtk::Application,
+    switch: &gtk::Switch,
+    label: &gtk::Label,
+    window: &gtk::ApplicationWindow,
+) {
     // Thanks to this method, we can say that this item is actually a checkbox.
     let switch_action = gio::SimpleAction::new_stateful("switch", None, &false.to_variant());
     switch_action.connect_activate(clone!(switch => move |g, _| {
@@ -137,7 +141,7 @@ fn build_ui(application: &gtk::Application) {
     window.set_default_size(350, 70);
 
     let v_box = gtk::Box::new(gtk::Orientation::Vertical, 10);
-    let label = gtk::Label::new("Nothing happened yet");
+    let label = gtk::Label::new(Some("Nothing happened yet"));
     let switch = gtk::Switch::new();
 
     v_box.pack_start(&label, false, false, 0);
@@ -152,9 +156,11 @@ fn build_ui(application: &gtk::Application) {
 }
 
 fn main() {
-    let application = gtk::Application::new("com.github.gtk-rs.examples.menu_bar_system",
-                                            Default::default())
-                                       .expect("Initialization failed...");
+    let application = gtk::Application::new(
+        Some("com.github.gtk-rs.examples.menu_bar_system"),
+        Default::default(),
+    )
+    .expect("Initialization failed...");
 
     application.connect_startup(|app| {
         add_accelerators(app);

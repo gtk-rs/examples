@@ -20,7 +20,7 @@ fn build_ui(application: &gtk::Application) {
     window.set_title("Drag and Drop Example with a TextView");
 
     // Give a nice text description for the user
-    let label = gtk::Label::new("Drag files and/or folders onto the TextView below.");
+    let label = gtk::Label::new(Some("Drag files and/or folders onto the TextView below."));
 
     // Create scrollable text view as our drag target
     let text_view = gtk::TextView::new();
@@ -32,7 +32,11 @@ fn build_ui(application: &gtk::Application) {
 
     // Configure the text view to accept URI lists from other applications. This allows
     // dragging files & folders from a file browser program onto the textview.
-    let targets = vec![gtk::TargetEntry::new("text/uri-list", TargetFlags::OTHER_APP, 0)];
+    let targets = vec![gtk::TargetEntry::new(
+        "text/uri-list",
+        TargetFlags::OTHER_APP,
+        0,
+    )];
     text_view.drag_dest_set(DestDefaults::HIGHLIGHT, &targets, DragAction::COPY);
 
     // Process any `drag-data-received` events received by the textview. These events include
@@ -66,9 +70,11 @@ fn build_ui(application: &gtk::Application) {
 }
 
 fn main() {
-    let application = gtk::Application::new("com.github.gtk-rs.examples.drag_and_drop_textview",
-                                            Default::default())
-                                       .expect("Initialization failed...");
+    let application = gtk::Application::new(
+        Some("com.github.gtk-rs.examples.drag_and_drop_textview"),
+        Default::default(),
+    )
+    .expect("Initialization failed...");
 
     application.connect_activate(|app| {
         build_ui(app);
