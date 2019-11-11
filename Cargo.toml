@@ -90,9 +90,6 @@ name = "drag_and_drop_textview"
 
 [[bin]]
 name = "gio_futures"
-
-[[bin]]
-name = "gio_futures_await"
 edition = "2018"
 
 [[bin]]
