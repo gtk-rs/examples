@@ -133,3 +133,6 @@ name = "list_store"
 
 [[bin]]
 name = "entry_completion"
+
+[[bin]]
+name = "drag_and_drop_listbox_model"
