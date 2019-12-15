@@ -17,10 +17,8 @@ gdk = "^0"
 gdk-pixbuf = "^0"
 gtk = "^0"
 pango = "^0"
+pangocairo = "^0"
 cairo-rs = { version = "^0", features = ["png"] }
-
-[dependencies.pangocairo]
-git = "https://github.com/gtk-rs/pangocairo"
 
 [dependencies.async-tls]
 version = "0.6"
