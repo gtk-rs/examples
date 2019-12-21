@@ -15,6 +15,7 @@ gio = "^0"
 gdk = "^0"
 gdk-pixbuf = "^0"
 gtk = "^0"
+once_cell = "^0"
 pango = "^0"
 pangocairo = "^0"
 cairo-rs = { version = "^0", features = ["png"] }
