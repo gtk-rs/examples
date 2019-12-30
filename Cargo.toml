@@ -37,6 +37,12 @@ name = "accessibility"
 name = "basic"
 
 [[bin]]
+name = "text_entry_signals"
+
+[[bin]]
+name = "iconview_example"
+
+[[bin]]
 name = "basic_subclass"
 
 [[bin]]
