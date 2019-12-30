@@ -29,7 +29,7 @@ fn build_ui(application: &gtk::Application) {
 
     let icon_view = gtk::IconView::new();
     icon_view.set_item_padding(0);
-    icon_view.set_columns(4);
+    icon_view.set_columns(3);
     icon_view.set_column_spacing(0);
     icon_view.set_selection_mode(gtk::SelectionMode::Single);
     icon_view.set_activate_on_single_click(false);
