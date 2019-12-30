@@ -1,8 +1,7 @@
-//! # Basic Sample
+//! # IconView Sample
 //!
 //! This sample demonstrates how to create a toplevel `window`, set its title, size and
-//! position, how to add a `button` to this `window` and how to connect signals with
-//! actions.
+//! position, how to add a `IconView` to this `window` and how to se `model` of the `IconView`
 
 extern crate gio;
 extern crate gtk;
