@@ -102,6 +102,9 @@ name = "drag_and_drop"
 name = "drag_and_drop_textview"
 
 [[bin]]
+name = "textview_tag"
+
+[[bin]]
 name = "gio_futures"
 
 [[bin]]
