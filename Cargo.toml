@@ -8,6 +8,9 @@ autobins = false
 chrono = "0.4"
 futures = "0.3"
 once_cell = "1.2.0"
+glium = { version = "0.26.0", optional = true }
+shared_library = { version = "0.1.9", optional = true }
+epoxy = { version = "0.1.0", optional = true }
 
 [dependencies.atk]
 git = "https://github.com/gtk-rs/atk"
@@ -52,6 +55,7 @@ optional = true
 gtk_3_18 = ["gtk/v3_18", "gdk-pixbuf/v2_32", "gdk/v3_18", "gio/v2_46", "glib/v2_46", "pango/v1_38"] #for CI tools
 gtk_3_22_30 = ["gtk_3_18", "gtk/v3_22_30", "gdk-pixbuf/v2_36", "gdk/v3_22", "gio/v2_56", "glib/v2_56", "pango/v1_42"] #for CI tools
 gtk_3_24 = ["gtk_3_22_30", "gtk/v3_24", "atk/v2_30", "gdk-pixbuf/v2_36_8", "gdk/v3_24", "gio/v2_58", "glib/v2_58"] #for CI tools
+glarea = ["gtk/v3_16", "glium", "shared_library", "epoxy"]
 
 [[bin]]
 name = "accessibility"
@@ -181,3 +185,7 @@ name = "printing"
 name = "gio_async_tls"
 required-features = ["async-tls"]
 edition = "2018"
+
+[[bin]]
+name = "glarea"
+required-features = ["glarea"]
