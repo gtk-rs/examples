@@ -26,7 +26,7 @@ pub trait GliumRenderer {
     /// `render` signal callback for the GLArea.
     fn draw(
         &mut self,
-        frame: glium::Frame,
+        frame: &mut glium::Frame,
         gl_area: &gtk::GLArea,
         gl_context: &gdk::GLContext,
     ) -> gtk::Inhibit;
@@ -104,11 +104,22 @@ where
     pub fn render(&mut self, gl_area: &gtk::GLArea, gl_context: &gdk::GLContext) -> gtk::Inhibit {
         match &self.facade {
             Some(facade) => {
-                let frame = glium::Frame::new(
+                let mut frame = glium::Frame::new(
                     facade.context.clone(),
                     facade.context.get_framebuffer_dimensions(),
                 );
-                self.renderer.draw(frame, gl_area, gl_context)
+
+                let inhibit = self.renderer.draw(&mut frame, gl_area, gl_context);
+
+                match frame.finish() {
+                    Err(err) => {
+                        eprintln!("Error finishin frame: {:?}", err);
+                        return Default::default();
+                    }
+                    _ => (),
+                }
+
+                inhibit
             }
             None => Default::default(),
         }

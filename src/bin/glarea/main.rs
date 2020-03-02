@@ -51,7 +51,13 @@ impl glium_backend::GliumRenderer for Renderer {
             },
         ];
 
-        let vertex_buffer = glium::VertexBuffer::new(facade, &vertices).unwrap();
+        let vertex_buffer = match glium::VertexBuffer::new(facade, &vertices) {
+            Ok(buff) => buff,
+            Err(err) => {
+                eprintln!("Error creating vertex buffer: {:?}", err);
+                return;
+            }
+        };
         let indices = glium::index::NoIndices(glium::index::PrimitiveType::TrianglesList);
 
         let vert_shader_src = r#"
@@ -79,7 +85,13 @@ impl glium_backend::GliumRenderer for Renderer {
         }"#;
 
         let program =
-            glium::Program::from_source(facade, vert_shader_src, frag_shader_src, None).unwrap();
+            match glium::Program::from_source(facade, vert_shader_src, frag_shader_src, None) {
+                Ok(buff) => buff,
+                Err(err) => {
+                    eprintln!("Error creating shader program: {:?}", err);
+                    return;
+                }
+            };
 
         self.triangle = Some(TriangleData {
             vertex_buffer,
@@ -94,22 +106,25 @@ impl glium_backend::GliumRenderer for Renderer {
 
     fn draw(
         &mut self,
-        mut frame: glium::Frame,
+        frame: &mut glium::Frame,
         _gl_area: &gtk::GLArea,
         _gl_context: &gdk::GLContext,
     ) -> gtk::Inhibit {
         if let Some(triangle) = &self.triangle {
             frame.clear_color(0.3, 0.3, 0.3, 1.0);
-            frame
-                .draw(
-                    &triangle.vertex_buffer,
-                    &triangle.indices,
-                    &triangle.program,
-                    &glium::uniforms::EmptyUniforms,
-                    &Default::default(),
-                )
-                .unwrap();
-            frame.finish().unwrap();
+            match frame.draw(
+                &triangle.vertex_buffer,
+                &triangle.indices,
+                &triangle.program,
+                &glium::uniforms::EmptyUniforms,
+                &Default::default(),
+            ) {
+                Err(err) => {
+                    eprintln!("Error drawing frame: {:?}", err);
+                    return Default::default();
+                }
+                _ => (),
+            }
         }
         Inhibit(false)
     }
