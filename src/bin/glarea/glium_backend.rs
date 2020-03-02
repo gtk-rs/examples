@@ -40,17 +40,16 @@ where
 {
     let hook = GlAreaGliumHook::new(renderer, check_current_context);
 
-    gl_area.connect_realize(glib::clone!(@strong hook => move |gl_area| {
+    gl_area.connect_realize(glib::clone!(@weak hook => move |gl_area| {
         hook.borrow_mut().realize(gl_area);
     }));
 
-    gl_area.connect_unrealize(glib::clone!(@strong hook => move |gl_area| {
+    gl_area.connect_unrealize(glib::clone!(@weak hook => move |gl_area| {
         hook.borrow_mut().unrealize(gl_area);
     }));
 
-    gl_area.connect_render(glib::clone!(@strong hook => move |gl_area, gl_context| {
-        hook.borrow_mut().render(gl_area, gl_context)
-    }));
+    gl_area
+        .connect_render(move |gl_area, gl_context| hook.borrow_mut().render(gl_area, gl_context));
 }
 
 /// This struct is used to hook a GLArea widget to glium using a GliumRenderer
