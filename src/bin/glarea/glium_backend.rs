@@ -1,6 +1,6 @@
 //! # glium_backend utility module
 //!
-//! This module provides some general utility typoes that allow glium to manage
+//! This module provides some general utility types that allow glium to manage
 //! the rendering of a GLArea.
 
 use std::cell::RefCell;
