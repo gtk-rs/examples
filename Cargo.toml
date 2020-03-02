@@ -51,7 +51,7 @@ version = "0.6"
 optional = true
 
 [features]
-#default = ["gtk_3_22_30"]
+#default = ["gtk_3_22_30", "glarea"]
 gtk_3_18 = ["gtk/v3_18", "gdk-pixbuf/v2_32", "gdk/v3_18", "gio/v2_46", "glib/v2_46", "pango/v1_38"] #for CI tools
 gtk_3_22_30 = ["gtk_3_18", "gtk/v3_22_30", "gdk-pixbuf/v2_36", "gdk/v3_22", "gio/v2_56", "glib/v2_56", "pango/v1_42"] #for CI tools
 gtk_3_24 = ["gtk_3_22_30", "gtk/v3_24", "atk/v2_30", "gdk-pixbuf/v2_36_8", "gdk/v3_24", "gio/v2_58", "glib/v2_58"] #for CI tools
