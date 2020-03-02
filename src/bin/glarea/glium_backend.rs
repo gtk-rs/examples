@@ -81,7 +81,14 @@ where
                 self.check_current_context,
                 Default::default(),
             )
-            .unwrap() // TODO: Better error handling`
+        };
+
+        let context = match context {
+            Ok(ctx) => ctx,
+            Err(err) => {
+                eprintln!("Error: unable to create glium Context: {}", err);
+                return;
+            }
         };
 
         let facade = Facade { context };
