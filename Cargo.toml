@@ -24,6 +24,12 @@ cairo-rs = { version = "^0", features = ["png"] }
 version = "0.6"
 optional = true
 
+
+[dependencies.timer]
+version = "0.2.0"
+optional = true
+#chrono = "0.4.11"
+
 [features]
 #default = ["gtk_3_22_30"]
 gtk_3_18 = ["gtk/v3_18", "gdk-pixbuf/v2_32", "gdk/v3_18", "gio/v2_46", "glib/v2_46", "pango/v1_38"] #for CI tools
@@ -146,6 +152,32 @@ name = "entry_completion"
 
 [[bin]]
 name = "printing"
+
+[[bin]]
+name = "counter"
+path = "src/bin/7gui/counter.rs"
+edition = "2018"
+
+[[bin]]
+name = "crud"
+path = "src/bin/7gui/crud.rs"
+edition = "2018"
+
+[[bin]]
+name = "flight_booker"
+path = "src/bin/7gui/flight_booker.rs"
+edition = "2018"
+
+[[bin]]
+name = "temperature_converter"
+path = "src/bin/7gui/temperature_converter.rs"
+edition = "2018"
+
+[[bin]]
+name = "timerapp"
+path = "src/bin/7gui/timer.rs"
+required-features = ["timer"]
+edition = "2018"
 
 [[bin]]
 name = "gio_async_tls"
