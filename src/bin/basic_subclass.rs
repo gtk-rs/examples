@@ -42,7 +42,7 @@ pub struct SimpleWindowPrivate {
 }
 
 impl ObjectSubclass for SimpleWindowPrivate {
-    const NAME: &'static str = "SimpleWindowPrivate";
+    const NAME: &'static str = "SimpleWindow";
     type ParentType = gtk::ApplicationWindow;
     type Instance = subclass::simple::InstanceStruct<Self>;
     type Class = subclass::simple::ClassStruct<Self>;
@@ -139,7 +139,7 @@ pub struct SimpleApplicationPrivate {
 }
 
 impl ObjectSubclass for SimpleApplicationPrivate {
-    const NAME: &'static str = "SimpleApplicationPrivate";
+    const NAME: &'static str = "SimpleApplication";
     type ParentType = gtk::Application;
     type Instance = subclass::simple::InstanceStruct<Self>;
     type Class = subclass::simple::ClassStruct<Self>;
