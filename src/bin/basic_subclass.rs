@@ -42,7 +42,7 @@ pub struct SimpleWindowPrivate {
 }
 
 impl ObjectSubclass for SimpleWindowPrivate {
-    const NAME: &'static str = "SimpleWindowPrivate";
+    const NAME: &'static str = "SimpleWindow";
     type ParentType = gtk::ApplicationWindow;
     type Instance = subclass::simple::InstanceStruct<Self>;
     type Class = subclass::simple::ClassStruct<Self>;
@@ -139,7 +139,7 @@ pub struct SimpleApplicationPrivate {
 }
 
 impl ObjectSubclass for SimpleApplicationPrivate {
-    const NAME: &'static str = "SimpleApplicationPrivate";
+    const NAME: &'static str = "SimpleApplication";
     type ParentType = gtk::Application;
     type Instance = subclass::simple::InstanceStruct<Self>;
     type Class = subclass::simple::ClassStruct<Self>;
@@ -165,10 +165,8 @@ impl ApplicationImpl for SimpleApplicationPrivate {
     // `gio::Application::activate` is what gets called when the
     // application is launched by the desktop environment and
     // aksed to present itself.
-    fn activate(&self, app: &gio::Application) {
-        let app = app.downcast_ref::<gtk::Application>().unwrap();
-        let priv_ = SimpleApplicationPrivate::from_instance(app);
-        let window = priv_
+    fn activate(&self, _app: &gio::Application) {
+        let window = self
             .window
             .get()
             .expect("Should always be initiliazed in gio_application_startup");
@@ -187,10 +185,8 @@ impl ApplicationImpl for SimpleApplicationPrivate {
         self.parent_startup(app);
 
         let app = app.downcast_ref::<gtk::Application>().unwrap();
-        let priv_ = SimpleApplicationPrivate::from_instance(app);
         let window = SimpleWindow::new(&app);
-        priv_
-            .window
+        self.window
             .set(window)
             .expect("Failed to initialize application window");
     }
