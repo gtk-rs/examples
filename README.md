@@ -16,13 +16,13 @@ or to enable GTK 3.x depending on the version needed by the example (check Cargo
 And then run the executables with:
 
 ``` Shell
-./target/debug/EXAMPLE-NAME
+> ./target/debug/EXAMPLE-NAME
 ```
 
 or with cargo run (repeating the compilation features used above), example:
 
 ``` Shell
-cargo run --all-features --bin EXAMPLE-NAME
+> cargo run --all-features --bin EXAMPLE-NAME
 ```
 
 Please be sure to have installed all the required libraries before building examples (the list is available on the [gtk-rs](https://github.com/gtk-rs/gtk/) repository).
