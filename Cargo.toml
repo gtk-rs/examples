@@ -181,3 +181,7 @@ name = "printing"
 name = "gio_async_tls"
 required-features = ["async-tls"]
 edition = "2018"
+
+[[bin]]
+name = "gio_dbus"
+required-features = ["gio/v2_46"]
