@@ -20,7 +20,7 @@ fn build_ui(application: &gtk::Application) {
     window.set_title("Accessibility");
     window.set_position(gtk::WindowPosition::Center);
 
-    let button = gtk::Button::new_with_label("Click me!");
+    let button = gtk::Button::with_label("Click me!");
     let label = gtk::Label::new(Some("0"));
     let vbox = gtk::Box::new(gtk::Orientation::Vertical, 0);
 
@@ -43,11 +43,7 @@ fn build_ui(application: &gtk::Application) {
     window.add(&vbox);
 
     button.connect_clicked(move |_| {
-        let value = label
-            .get_text()
-            .and_then(|s| u32::from_str_radix(&s, 10).ok())
-            .unwrap_or(0)
-            + 1;
+        let value = label.get_text().parse().unwrap_or(0) + 1;
         label.set_text(&value.to_string());
     });
 

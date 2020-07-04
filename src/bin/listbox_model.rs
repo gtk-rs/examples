@@ -68,7 +68,7 @@ fn build_ui(application: &gtk::Application) {
                 .build();
             hbox.pack_start(&label, true, true, 0);
 
-            let spin_button = gtk::SpinButton::new_with_range(0.0, 100.0, 1.0);
+            let spin_button = gtk::SpinButton::with_range(0.0, 100.0, 1.0);
             item.bind_property("count", &spin_button, "value")
                 .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
                 .build();
@@ -76,12 +76,12 @@ fn build_ui(application: &gtk::Application) {
 
         // When the edit button is clicked, a new modal dialog is created for editing
         // the corresponding row
-        let edit_button = gtk::Button::new_with_label("Edit");
+        let edit_button = gtk::Button::with_label("Edit");
         edit_button.connect_clicked(clone!(@weak window, @strong item => move |_| {
-            let dialog = gtk::Dialog::new_with_buttons(Some("Edit Item"), Some(&window), gtk::DialogFlags::MODAL,
+            let dialog = gtk::Dialog::with_buttons(Some("Edit Item"), Some(&window), gtk::DialogFlags::MODAL,
                 &[("Close", ResponseType::Close)]);
             dialog.set_default_response(ResponseType::Close);
-            dialog.connect_response(|dialog, _| dialog.destroy());
+            dialog.connect_response(|dialog, _| dialog.close());
 
             let content_area = dialog.get_content_area();
 
@@ -100,7 +100,7 @@ fn build_ui(application: &gtk::Application) {
             }));
             content_area.add(&entry);
 
-            let spin_button = gtk::SpinButton::new_with_range(0.0, 100.0, 1.0);
+            let spin_button = gtk::SpinButton::with_range(0.0, 100.0, 1.0);
             item.bind_property("count", &spin_button, "value")
                 .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
                 .build();
@@ -133,9 +133,9 @@ fn build_ui(application: &gtk::Application) {
     // and only create it once the Ok button in the dialog is clicked, and only
     // then add it to the model. Once added to the model, it will immediately
     // appear in the listbox UI
-    let add_button = gtk::Button::new_with_label("Add");
+    let add_button = gtk::Button::with_label("Add");
     add_button.connect_clicked(clone!(@weak window, @weak model => move |_| {
-            let dialog = gtk::Dialog::new_with_buttons(Some("Add Item"), Some(&window), gtk::DialogFlags::MODAL,
+            let dialog = gtk::Dialog::with_buttons(Some("Add Item"), Some(&window), gtk::DialogFlags::MODAL,
                 &[("Ok", ResponseType::Ok), ("Cancel", ResponseType::Cancel)]);
             dialog.set_default_response(ResponseType::Ok);
 
@@ -147,16 +147,15 @@ fn build_ui(application: &gtk::Application) {
             }));
             content_area.add(&entry);
 
-            let spin_button = gtk::SpinButton::new_with_range(0.0, 100.0, 1.0);
+            let spin_button = gtk::SpinButton::with_range(0.0, 100.0, 1.0);
             content_area.add(&spin_button);
 
             dialog.connect_response(clone!(@weak model, @weak entry, @weak spin_button => move |dialog, resp| {
-                if let Some(text) = entry.get_text() {
-                    if !text.is_empty() && resp == ResponseType::Ok {
-                        model.append(&RowData::new(&text, spin_button.get_value() as u32));
-                    }
+                let text = entry.get_text();
+                if !text.is_empty() && resp == ResponseType::Ok {
+                    model.append(&RowData::new(&text, spin_button.get_value() as u32));
                 }
-                dialog.destroy();
+                dialog.close();
             }));
 
             dialog.show_all();
@@ -167,7 +166,7 @@ fn build_ui(application: &gtk::Application) {
     // Via the delete button we delete the item from the model that
     // is at the index of the selected row. Also deleting from the
     // model is immediately reflected in the listbox.
-    let delete_button = gtk::Button::new_with_label("Delete");
+    let delete_button = gtk::Button::with_label("Delete");
     delete_button.connect_clicked(clone!(@weak model, @weak listbox => move |_| {
         let selected = listbox.get_selected_row();
 

@@ -15,12 +15,11 @@ use gtk::Orientation::Vertical;
 use gtk::{ApplicationWindow, Button, Label, PackType};
 
 use std::env::args;
-use std::str::FromStr;
 
 fn build_ui(application: &gtk::Application) {
     let vbox = gtk::Box::new(Vertical, 0);
 
-    let plus_button = Button::new_with_label("+");
+    let plus_button = Button::with_label("+");
     vbox.add(&plus_button);
     // Set some child properties.
     // These calls need to be added after the Widget is added to the Box.
@@ -32,12 +31,12 @@ fn build_ui(application: &gtk::Application) {
     let counter_label = Label::new(Some("0"));
     vbox.add(&counter_label);
 
-    let minus_button = Button::new_with_label("-");
+    let minus_button = Button::with_label("-");
     vbox.add(&minus_button);
 
     minus_button.connect_clicked(clone!(@weak counter_label => move |_| {
         let nb = counter_label.get_text()
-            .and_then(|s| u32::from_str(&s).ok())
+            .parse()
             .unwrap_or(0);
         if nb > 0 {
             counter_label.set_text(&format!("{}", nb - 1));
@@ -45,7 +44,7 @@ fn build_ui(application: &gtk::Application) {
     }));
     plus_button.connect_clicked(clone!(@weak counter_label => move |_| {
         let nb = counter_label.get_text()
-            .and_then(|s| u32::from_str(&s).ok())
+            .parse()
             .unwrap_or(0);
         counter_label.set_text(&format!("{}", nb + 1));
     }));

@@ -24,14 +24,18 @@ fn about_clicked(button: &Button, dialog: &AboutDialog) {
         dialog.set_transient_for(Some(&window));
     }
 
+    // We only want to hide the dialog when it's closed and not completely destroy it
+    // as otherwise we can't show it again a second time.
+    dialog.connect_delete_event(|dialog, _| {
+        dialog.hide();
+        gtk::Inhibit(true)
+    });
+
     println!("Authors: {:?}", dialog.get_authors());
     println!("Artists: {:?}", dialog.get_artists());
     println!("Documenters: {:?}", dialog.get_documenters());
 
-    // Since we only have once instance of this object with Glade, we only show/hide it.
-    dialog.show();
-    dialog.run();
-    dialog.hide();
+    dialog.show_all();
 }
 
 fn build_ui(application: &gtk::Application) {
@@ -41,7 +45,7 @@ fn build_ui(application: &gtk::Application) {
         gtk::get_minor_version()
     );
     let glade_src = include_str!("gtktest.glade");
-    let builder = Builder::new_from_string(glade_src);
+    let builder = Builder::from_string(glade_src);
 
     let spinner: Spinner = builder.get_object("spinner").expect("Couldn't get spinner");
     spinner.start();
@@ -56,9 +60,7 @@ fn build_ui(application: &gtk::Application) {
         .get_object("spin_button")
         .expect("Couldn't get spin_button");
     spin_button.connect_input(|spin_button| {
-        let text = spin_button
-            .get_text()
-            .expect("Couldn't get text from spin_button");
+        let text = spin_button.get_text();
         println!("spin_button_input: \"{}\"", text);
         match text.parse::<f64>() {
             Ok(value) if value >= 90. => {
@@ -81,18 +83,18 @@ fn build_ui(application: &gtk::Application) {
     let entry: Entry = builder.get_object("entry").expect("Couldn't get entry");
 
     button.connect_clicked(clone!(@weak window, @weak entry => move |_| {
-        let dialog = Dialog::new_with_buttons(Some("Hello!"),
+        let dialog = Dialog::with_buttons(Some("Hello!"),
                                               Some(&window),
                                               gtk::DialogFlags::MODAL,
                                               &[("No", ResponseType::No),
                                                 ("Yes", ResponseType::Yes),
                                                 ("Custom", ResponseType::Other(0))]);
 
-        let ret = dialog.run();
-
-        dialog.destroy();
-
-        entry.set_text(&format!("Clicked {}", ret));
+        dialog.connect_response(clone!(@weak entry => move |dialog, response| {
+            entry.set_text(&format!("Clicked {}", response));
+            dialog.close();
+        }));
+        dialog.show_all();
     }));
 
     let button_font: Button = builder
@@ -101,8 +103,8 @@ fn build_ui(application: &gtk::Application) {
     button_font.connect_clicked(clone!(@weak window => move |_| {
         let dialog = FontChooserDialog::new(Some("Font chooser test"), Some(&window));
 
-        dialog.run();
-        dialog.destroy();
+        dialog.connect_response(|dialog, _| dialog.close());
+        dialog.show_all();
     }));
 
     let button_recent: Button = builder
@@ -115,8 +117,8 @@ fn build_ui(application: &gtk::Application) {
             ("Cancel", ResponseType::Cancel)
         ]);
 
-        dialog.run();
-        dialog.destroy();
+        dialog.connect_response(|dialog, _| dialog.close());
+        dialog.show_all();
     }));
 
     let file_button: Button = builder
@@ -132,11 +134,15 @@ fn build_ui(application: &gtk::Application) {
         ]);
 
         dialog.set_select_multiple(true);
-        dialog.run();
-        let files = dialog.get_filenames();
-        dialog.destroy();
 
-        println!("Files: {:?}", files);
+        dialog.connect_response(|dialog, response| {
+            if response == ResponseType::Ok {
+                let files = dialog.get_filenames();
+                println!("Files: {:?}", files);
+            }
+            dialog.close();
+        });
+        dialog.show_all();
     }));
 
     let app_button: Button = builder
@@ -148,8 +154,8 @@ fn build_ui(application: &gtk::Application) {
                                                             gtk::DialogFlags::MODAL,
                                                             "sh");
 
-        dialog.run();
-        dialog.destroy();
+        dialog.connect_response(|dialog, _| dialog.close());
+        dialog.show_all();
     }));
 
     let switch: Switch = builder.get_object("switch").expect("Couldn't get switch");
@@ -173,7 +179,7 @@ fn build_ui(application: &gtk::Application) {
             let keystate = key.get_state();
 
             println!("key pressed: {} / {:?}", keyval, keystate);
-            println!("text: {}", entry.get_text().expect("Couldn't get text from entry"));
+            println!("text: {}", entry.get_text());
 
             if keystate.intersects(gdk::ModifierType::CONTROL_MASK) {
                 println!("You pressed Ctrl!");

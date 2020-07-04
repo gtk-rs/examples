@@ -15,7 +15,7 @@ extern crate once_cell;
 use gio::prelude::*;
 use gtk::prelude::*;
 
-use gio::subclass::application::ApplicationImplExt;
+use gio::subclass::prelude::*;
 use gio::ApplicationFlags;
 use glib::subclass;
 use glib::subclass::prelude::*;
@@ -69,7 +69,7 @@ impl ObjectImpl for SimpleWindowPrivate {
         let self_ = obj.downcast_ref::<SimpleWindow>().unwrap();
 
         let headerbar = gtk::HeaderBar::new();
-        let increment = gtk::Button::new_with_label("Increment!");
+        let increment = gtk::Button::with_label("Increment!");
         let label = gtk::Label::new(Some("Press the Increment Button!"));
 
         headerbar.set_title(Some("Hello World!"));

@@ -58,7 +58,15 @@ fn print(window: &gtk::Window, value1: String, value2: String) {
         pangocairo::functions::show_layout(&cairo, &pango_layout);
     });
 
-    //Open Print dialog setting up main window as its parent
+    // Handle printing asynchronously: run() will immediately return below on
+    // platforms where this is supported and once the dialog is finished the
+    // "done" signal will be emitted.
+    print_operation.set_allow_async(true);
+    print_operation.connect_done(|_, res| {
+        println!("printing done: {:?}", res);
+    });
+
+    // Open Print dialog setting up main window as its parent
     print_operation
         .run(gtk::PrintOperationAction::PrintDialog, Option::from(window))
         .expect("Couldn't print");
@@ -66,7 +74,7 @@ fn print(window: &gtk::Window, value1: String, value2: String) {
 
 fn build_ui(application: &gtk::Application) {
     let glade_src = include_str!("printing.glade");
-    let builder = gtk::Builder::new_from_string(glade_src);
+    let builder = gtk::Builder::from_string(glade_src);
 
     let window: gtk::Window = builder.get_object("window").expect("Couldn't get window");
     window.set_application(Some(application));
@@ -77,8 +85,8 @@ fn build_ui(application: &gtk::Application) {
         .expect("Couldn't get buttonprint");
 
     button_print.connect_clicked(clone!(@weak window => move |_| {
-        let text1 = entry1.get_text().expect("Couldn't get text1").to_string();
-        let text2 = entry2.get_text().expect("Couldn't get text2").to_string();
+        let text1 = entry1.get_text().to_string();
+        let text2 = entry2.get_text().to_string();
         print(&window, text1, text2);
     }));
 
