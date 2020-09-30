@@ -3,10 +3,6 @@
 //! This sample demonstrates how to use gtk::timeout_add_seconds to run
 //! a periodic task, implementing a clock in this example.
 
-extern crate chrono;
-extern crate gio;
-extern crate gtk;
-
 use chrono::Local;
 use gio::prelude::*;
 use gtk::prelude::*;

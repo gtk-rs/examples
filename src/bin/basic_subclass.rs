@@ -5,21 +5,16 @@
 //! and `activate` and how to interact with the GObjects and their private
 //! structs.
 
-#[macro_use]
-extern crate glib;
-extern crate gio;
-extern crate gtk;
-
-extern crate once_cell;
-
 use gio::prelude::*;
-use gtk::prelude::*;
-
 use gio::subclass::prelude::*;
 use gio::ApplicationFlags;
+
 use glib::subclass;
 use glib::subclass::prelude::*;
 use glib::translate::*;
+use glib::{clone, glib_object_impl, glib_object_subclass, glib_wrapper};
+
+use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
 use once_cell::unsync::OnceCell;
