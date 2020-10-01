@@ -41,7 +41,7 @@ fn build_ui(application: &gtk::Application) {
     };
 
     // executes the closure once every second
-    gtk::timeout_add_seconds(1, tick);
+    glib::timeout_add_seconds_local(1, tick);
 }
 
 fn main() {
