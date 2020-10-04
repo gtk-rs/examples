@@ -16,7 +16,7 @@
     <property name="can_focus">False</property>
     <property name="type_hint">dialog</property>
     <property name="program_name">Glade</property>
-    <property name="website">http://gtk-rs.org</property>
+    <property name="website">https://gtk-rs.org</property>
     <property name="authors">James T. Kirk
 Spock
 Leonard McCoy</property>

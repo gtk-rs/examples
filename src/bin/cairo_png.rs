@@ -2,7 +2,7 @@
 //!
 //! This sample demonstrates how to create `ImageSurface`, draw on it
 //! and then save result to PNG file.
-//! Analog of C# example http://www.mgsloan.com/cairo_tut/stroke.cs
+//! Analog of C# example https://web.archive.org/web/20130729155927/http://www.mgsloan.com/cairo_tut/stroke.cs
 
 extern crate cairo;
 

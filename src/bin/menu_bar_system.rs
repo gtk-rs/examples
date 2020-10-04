@@ -90,7 +90,7 @@ fn add_actions(
     about.connect_activate(clone!(@weak window => move |_, _| {
         let p = AboutDialog::new();
         p.set_website_label(Some("gtk-rs"));
-        p.set_website(Some("http://gtk-rs.org"));
+        p.set_website(Some("https://gtk-rs.org"));
         p.set_authors(&["Gtk-rs developers"]);
         p.set_title("About!");
         p.set_transient_for(Some(&window));
