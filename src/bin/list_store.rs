@@ -6,6 +6,7 @@ use gtk::prelude::*;
 
 use std::env::args;
 use std::rc::Rc;
+use std::time::Duration;
 
 #[derive(Debug)]
 #[repr(i32)]
@@ -54,7 +55,7 @@ fn build_ui(application: &gtk::Application) {
     window.show_all();
 
     let model = model.clone();
-    timeout_add(80, move || spinner_timeout(&model));
+    glib::timeout_add_local(Duration::from_millis(80), move || spinner_timeout(&model));
 }
 
 struct Data {

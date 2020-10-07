@@ -11,6 +11,7 @@ use chrono::Local;
 use gio::prelude::*;
 use gtk::prelude::*;
 use std::env::args;
+use std::time::Duration;
 
 fn current_time() -> String {
     format!("{}", Local::now().format("%Y-%m-%d %H:%M:%S"))
@@ -41,7 +42,7 @@ fn build_ui(application: &gtk::Application) {
     };
 
     // executes the closure once every second
-    gtk::timeout_add_seconds(1, tick);
+    glib::timeout_add_seconds_local(Duration::from_millis(1), tick);
 }
 
 fn main() {
