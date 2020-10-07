@@ -18,7 +18,6 @@ use gtk::prelude::*;
 use gio::subclass::prelude::*;
 use gio::ApplicationFlags;
 use glib::subclass;
-use glib::subclass::prelude::*;
 use glib::translate::*;
 use gtk::subclass::prelude::*;
 
