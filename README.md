@@ -1,3 +1,8 @@
+# DEPRECATION NOTICE
+
+This repository is **DEPRECATED**.
+Use the [gtk-rs/gtk-rs](https://github.com/gtk-rs/gtk-rs) repository instead!
+
 # gtk-rs examples [![Build Status](https://travis-ci.org/gtk-rs/examples.png?branch=master)](https://travis-ci.org/gtk-rs/examples) [![Build status](https://ci.appveyor.com/api/projects/status/pi27a5xubp0ihl2d?svg=true)](https://ci.appveyor.com/project/GuillaumeGomez/examples)
 
 A few gtk-rs examples. To build, just do:
