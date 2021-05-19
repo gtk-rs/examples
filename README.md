@@ -32,5 +32,7 @@ cargo run --all-features --bin EXAMPLE-NAME
 
 Please be sure to have installed all the required libraries before building examples (the list is available on the [gtk-rs](https://github.com/gtk-rs/gtk/) repository).
 
+A list of examples with screenshots is available [here](reference.md).
+
 ## LICENSE
 The gtk-rs examples repository is licensed under the MIT license, please refer to the LICENSE and COPYRIGHT files for more information.
